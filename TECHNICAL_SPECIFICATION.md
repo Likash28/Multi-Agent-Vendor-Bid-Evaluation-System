@@ -1,9 +1,9 @@
 # Technical Specification Document
 ## Multi-Agent Vendor Bid Evaluation System (GovProcure)
 
-**Version:** 1.0
-**Date:** December 2024
-**Status:** Draft
+**Version:** 1.1
+**Date:** December 2025
+**Status:** Revised (Gap Analysis Updates)
 
 ---
 
@@ -41,6 +41,18 @@ The Multi-Agent Vendor Bid Evaluation System (GovProcure) is a government procur
 - Evaluation Committee Members
 - Department Administrators
 - Audit Personnel
+
+### 1.4 Stakeholder Decisions (Gap Analysis - Dec 2025)
+
+The following decisions were resolved during gap analysis to clarify ambiguous requirements:
+
+| Decision | Resolution | Rationale |
+|----------|------------|-----------|
+| **Tie-breaking** | Earliest submission wins | When vendors have identical total scores, the vendor who submitted first is ranked higher |
+| **Qualification Threshold** | 75 points is a **hard cutoff** | Bids scoring below 75 in technical evaluation are disqualified and excluded from financial evaluation |
+| **Winner Recommendation** | System **recommends winner** with justification | The system explicitly identifies the recommended vendor with detailed AI-generated justification |
+| **Scope** | Hackathon demo (MVP) | SQLite database, local file storage, minimal AWS infrastructure (~$60/month) |
+| **LLM Provider** | AWS Bedrock (Claude Sonnet 4.5) | Model ID: `anthropic.claude-sonnet-4-5-20250929-v1:0` |
 
 ---
 
@@ -117,12 +129,16 @@ The Multi-Agent Vendor Bid Evaluation System (GovProcure) is a government procur
 | Technology | Purpose |
 |------------|---------|
 | **LangChain** | Agent orchestration |
-| **OpenAI GPT-4 / Claude** | LLM for analysis |
+| **AWS Bedrock** | LLM provider (managed, scalable) |
+| **Claude Sonnet 4.5** | Primary LLM (`anthropic.claude-sonnet-4-5-20250929-v1:0`) |
+| **LangChain-AWS** | `ChatBedrockConverse` wrapper for Bedrock integration |
 | **LangGraph** | Multi-agent workflows |
-| **PyPDF2 / pdfplumber** | PDF extraction |
+| **PyMuPDF / pdfplumber** | PDF extraction |
 | **python-docx** | DOCX parsing |
 | **Sentence Transformers** | Document embeddings |
-| **ChromaDB / Pinecone** | Vector storage |
+| **ChromaDB / Pinecone** | Vector storage (optional) |
+
+> **Note:** AWS Bedrock provides managed LLM access with automatic scaling, no API key management, and enterprise security. Temperature is set to 0.2 for consistent scoring.
 
 ### 3.4 Infrastructure (POC - AWS EC2 Minimal)
 
@@ -375,9 +391,9 @@ frontend/
 
 **Step 3: Evaluation Configuration**
 - Evaluation Method selection:
-  - L1 (Lowest Price)
-  - QCBS (Quality & Cost Based Selection) - Recommended
-  - Two-Stage Bidding
+  - **L1 (Lowest Price)**: Winner is the vendor with the lowest bid meeting all technical requirements
+  - **QCBS (Quality & Cost Based Selection)** - Recommended: Weighted scoring combining technical (70%) and financial (30%) scores
+  - **Two-Stage Bidding**: Sequential evaluation where Stage 1 (technical) qualifies vendors for Stage 2 (financial)
 - Weight Configuration slider (Technical vs Financial)
 - Qualification Threshold input
 - Advanced Settings:
@@ -684,10 +700,11 @@ class Settings(BaseSettings):
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
-    # AI/LLM
-    OPENAI_API_KEY: str = ""
-    ANTHROPIC_API_KEY: str = ""
-    LLM_MODEL: str = "gpt-4-turbo"
+    # AI/LLM (AWS Bedrock)
+    AWS_BEDROCK_REGION: str = "us-east-1"
+    AWS_BEDROCK_MODEL_ID: str = "anthropic.claude-sonnet-4-5-20250929-v1:0"
+    LLM_TEMPERATURE: float = 0.2
+    LLM_TIMEOUT: int = 120  # seconds
 
     # CORS
     ALLOWED_ORIGINS: list[str] = ["http://localhost:3000"]
@@ -891,9 +908,28 @@ class EvaluationStatus(str, enum.Enum):
     CANCELLED = "cancelled"
 
 class EvaluationMethod(str, enum.Enum):
-    L1 = "l1"
-    QCBS = "qcbs"
-    TWO_STAGE = "two_stage"
+    L1 = "l1"           # Lowest Price - winner is lowest bid meeting technical requirements
+    QCBS = "qcbs"       # Quality & Cost Based Selection - weighted scoring
+    TWO_STAGE = "two_stage"  # Two-Stage Bidding - see below
+
+"""
+Two-Stage Bidding Process (Added in v1.1):
+=========================================
+Stage 1 (Technical Qualification):
+  1. All vendors submit technical proposals only
+  2. Technical evaluation against tender criteria
+  3. Vendors scoring >= qualification_threshold proceed to Stage 2
+  4. Vendors below threshold are eliminated
+
+Stage 2 (Financial Bidding):
+  1. Only qualified vendors are invited to submit financial bids
+  2. Financial bids evaluated using L1 method
+  3. Winner is lowest bidder among qualified vendors
+
+Key Difference from QCBS:
+  - QCBS: Technical and financial scores are weighted and combined
+  - Two-Stage: Technical is pass/fail, then L1 among qualified vendors
+"""
 
 class Evaluation(Base):
     __tablename__ = "evaluations"
@@ -940,7 +976,47 @@ class Evaluation(Base):
     winner_bid = relationship("Bid", foreign_keys=[winner_bid_id])
 ```
 
-### 7.3 Database Indexes
+### 7.3 Data Normalization Rules (Added in v1.1)
+
+The following normalization rules ensure consistent data handling across the system:
+
+| Field | Storage Format | Display Format | Validation |
+|-------|---------------|----------------|------------|
+| **Currency (INR)** | Integer (paisa) | ₹X.XX or ₹X Cr | Store ₹2 Cr as `20000000000` paisa |
+| **Timestamps** | UTC (ISO 8601) | IST (+05:30) | Always store UTC, display as IST |
+| **Financial Year** | String (FY format) | FY25, FY26 | Regex: `^FY\d{2}$` |
+| **Bid Amount** | Decimal(15,2) | ₹X,XX,XXX.XX | Normalize to INR; max 15 digits |
+| **Phone Numbers** | String (E.164) | +91-XXXXX-XXXXX | Validate Indian format |
+| **GSTIN** | String (15 chars) | XX-XXXXXXX-XXXX | Validate checksum |
+
+```python
+# app/utils/normalization.py
+
+def normalize_currency_to_paisa(amount: str) -> int:
+    """Convert human-readable currency to paisa (smallest unit).
+
+    Examples:
+        '₹2 Cr' -> 20000000000 (paisa)
+        '₹50 Lakh' -> 5000000000 (paisa)
+        '₹1,25,000' -> 12500000 (paisa)
+    """
+    # Implementation handles Cr, Lakh, and comma-separated formats
+    pass
+
+def display_currency(paisa: int, short: bool = False) -> str:
+    """Convert paisa to human-readable format.
+
+    Examples:
+        20000000000 -> '₹2 Cr' (short=True) or '₹2,00,00,000' (short=False)
+    """
+    pass
+
+def utc_to_ist(utc_dt: datetime) -> datetime:
+    """Convert UTC datetime to IST (+05:30) for display."""
+    return utc_dt + timedelta(hours=5, minutes=30)
+```
+
+### 7.4 Database Indexes
 
 ```sql
 -- Performance indexes
@@ -1004,8 +1080,15 @@ USING gin(to_tsvector('english', name));
 │ - Parse quotes  │    │ - Cross-vendor  │    │ - Generate      │
 │ - Calculate L1  │    │   analysis      │    │   summaries     │
 │ - Adjustments   │    │ - Cartel detect │    │ - Create PDF    │
-│ - Normalize     │    │ - Anomaly flags │    │ - Audit trail   │
+│ - Normalize     │    │   (Beta/Advis.) │    │ - Audit trail   │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
+
+> **Cartel Detection (Beta - Advisory Only):**
+> - Flags suspicious patterns for **human review only**
+> - Does NOT automatically disqualify vendors
+> - Detected patterns: identical pricing, bid rotation, cover bidding, unusual price clustering
+> - All flags require manual verification before any action
+> - False positive rate is expected; treat as investigative leads, not conclusions
 ```
 
 ### 8.2 Orchestrator Implementation
@@ -1014,13 +1097,14 @@ USING gin(to_tsvector('english', name));
 # app/agents/orchestrator.py
 from typing import Dict, Any, List
 from langgraph.graph import StateGraph, END
-from langchain_openai import ChatOpenAI
+from langchain_aws import ChatBedrockConverse
 from app.agents.document_parser import DocumentParserAgent
 from app.agents.compliance_agent import ComplianceAgent
 from app.agents.technical_agent import TechnicalAgent
 from app.agents.financial_agent import FinancialAgent
 from app.agents.comparison_agent import ComparisonAgent
 from app.agents.report_agent import ReportAgent
+from app.services.bedrock_llm_service import bedrock_llm_service
 
 class EvaluationState:
     """State object passed between agents."""
@@ -1035,10 +1119,45 @@ class EvaluationState:
     current_step: str
     error: str | None
 
+    # Error Recovery (Added in v1.1)
+    retry_count: int = 0
+    max_retries: int = 3
+    failed_step: str | None = None
+    partial_results_saved: bool = False
+
+"""
+Error Recovery Workflow (Added in v1.1):
+=======================================
+When LLM fails during evaluation:
+
+1. Retry with exponential backoff:
+   - Attempt 1: Immediate retry
+   - Attempt 2: Wait 2 seconds
+   - Attempt 3: Wait 4 seconds
+
+2. If all retries fail:
+   - Save partial results to database
+   - Set evaluation status to FAILED
+   - Log detailed error with stack trace
+   - Send notification to user
+
+3. Manual recovery options:
+   - Restart from failed step (preserves completed work)
+   - Restart entire evaluation
+   - Cancel evaluation
+
+4. Partial results are preserved:
+   - Completed agent outputs saved before failure
+   - Resume capability from last successful checkpoint
+"""
+
 class EvaluationOrchestrator:
     def __init__(self, config: Dict[str, Any]):
         self.config = config
-        self.llm = ChatOpenAI(model="gpt-4-turbo", temperature=0)
+        # Use AWS Bedrock with Claude Sonnet 4.5
+        self.llm = bedrock_llm_service.get_bedrock_client(
+            model_id="anthropic.claude-sonnet-4-5-20250929-v1:0"
+        )
 
         # Initialize agents
         self.document_parser = DocumentParserAgent(self.llm)
@@ -1161,11 +1280,11 @@ class EvaluationOrchestrator:
 ```python
 # app/agents/technical_agent.py
 from typing import Dict, Any, List
-from langchain_openai import ChatOpenAI
+from langchain_aws import ChatBedrockConverse
 from langchain.prompts import ChatPromptTemplate
 
 class TechnicalAgent:
-    def __init__(self, llm: ChatOpenAI):
+    def __init__(self, llm: ChatBedrockConverse):
         self.llm = llm
         self.evaluation_prompt = ChatPromptTemplate.from_messages([
             ("system", """You are an expert technical evaluator for government procurement.
@@ -1224,7 +1343,8 @@ class TechnicalAgent:
             "is_qualified": total_score >= config.get("qualification_threshold", 75),
             "breakdown": scores,
             "ai_reasoning": {
-                "model": "gpt-4-turbo",
+                "model": "anthropic.claude-sonnet-4-5-20250929-v1:0",
+                "provider": "aws_bedrock",
                 "timestamp": self._timestamp(),
                 "raw_response": response.content
             }
@@ -1348,6 +1468,20 @@ POST /api/v1/auth/refresh
 GET /api/v1/auth/me
   Headers: Authorization: Bearer <token>
   Response: UserResponse
+
+# Password Reset (Added in v1.1)
+POST /api/v1/auth/forgot-password
+  Request:
+    email: string
+  Response:
+    message: "Password reset email sent"
+
+POST /api/v1/auth/reset-password
+  Request:
+    token: string
+    new_password: string
+  Response:
+    message: "Password reset successful"
 ```
 
 ### 9.2 Evaluation Endpoints
@@ -1425,6 +1559,26 @@ GET /api/v1/evaluations/{id}/results/comparison
 GET /api/v1/evaluations/{id}/export
   Query: format: "pdf" | "xlsx"
   Response: Binary file
+
+# Cancel evaluation (Added in v1.1)
+POST /api/v1/evaluations/{id}/cancel
+  Request:
+    reason: string (optional)
+  Response:
+    id: uuid
+    status: "cancelled"
+    cancelled_at: datetime
+    cancelled_by: uuid
+
+# Approve evaluation results (Added in v1.1)
+POST /api/v1/evaluations/{id}/approve
+  Request:
+    approver_notes: string (optional)
+  Response:
+    id: uuid
+    status: "approved"
+    approved_at: datetime
+    approved_by: uuid
 ```
 
 ### 9.3 Document Endpoints
@@ -1472,7 +1626,62 @@ GET /api/v1/vendors/{id}/history
   Response: VendorBidHistory
 ```
 
-### 9.5 Schema Definitions
+### 9.5 Admin Endpoints (Added in v1.1)
+
+```yaml
+# List users
+GET /api/v1/admin/users
+  Query:
+    role: string (optional)
+    department_id: uuid (optional)
+    page: int
+    limit: int
+  Response: UserList
+
+# Create user
+POST /api/v1/admin/users
+  Request:
+    email: string
+    password: string
+    name: string
+    role: "officer" | "evaluator" | "admin"
+    department_id: uuid
+  Response: UserDetail
+
+# Update user
+PATCH /api/v1/admin/users/{id}
+  Request:
+    name: string (optional)
+    role: string (optional)
+    is_active: boolean (optional)
+  Response: UserDetail
+
+# Delete user
+DELETE /api/v1/admin/users/{id}
+  Response: { message: "User deleted" }
+
+# Get audit logs
+GET /api/v1/admin/audit-logs
+  Query:
+    entity_type: string (optional)
+    entity_id: uuid (optional)
+    actor_id: uuid (optional)
+    from_date: datetime (optional)
+    to_date: datetime (optional)
+    page: int
+    limit: int
+  Response:
+    items: AuditLog[]
+    total: int
+
+# List departments
+GET /api/v1/departments
+  Response:
+    items: Department[]
+    total: int
+```
+
+### 9.6 Schema Definitions
 
 ```python
 # app/schemas/evaluation.py
@@ -1491,10 +1700,21 @@ class EvaluationConfig(BaseModel):
     method: EvaluationMethod = EvaluationMethod.QCBS
     technical_weight: int = Field(70, ge=0, le=100)
     financial_weight: int = Field(30, ge=0, le=100)
-    qualification_threshold: int = Field(75, ge=0, le=100)
+    qualification_threshold: int = Field(75, ge=0, le=100)  # Hard cutoff per gap analysis
     enable_compliance_check: bool = True
     enable_justifications: bool = True
-    enable_cartel_detection: bool = False
+    enable_cartel_detection: bool = False  # Beta feature - advisory only
+
+    # Weight Validation (Added in v1.1)
+    @model_validator(mode='after')
+    def validate_weights_sum_to_100(self):
+        """Ensure technical + financial weights equal 100%."""
+        if self.technical_weight + self.financial_weight != 100:
+            raise ValueError(
+                f"Weights must sum to 100 (got {self.technical_weight} + {self.financial_weight} = "
+                f"{self.technical_weight + self.financial_weight})"
+            )
+        return self
 
 class EvaluationCreate(BaseModel):
     tender_document_id: UUID
@@ -2053,6 +2273,30 @@ echo "Backup completed: $DATE"
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | Dec 2024 | - | Initial draft |
+| 1.1 | Dec 2025 | - | Gap analysis updates (see below) |
+
+### Version 1.1 Changes (December 2025)
+
+Based on comprehensive gap analysis, the following updates were made:
+
+**Stakeholder Decisions:**
+- Tie-breaking: Earliest submission wins
+- Qualification threshold (75): Hard cutoff
+- Winner recommendation: System recommends with justification
+- LLM provider: AWS Bedrock (Claude Sonnet 4.5)
+
+**New API Endpoints:**
+- Password reset: `POST /auth/forgot-password`, `POST /auth/reset-password`
+- Admin endpoints: User CRUD, audit logs
+- Evaluation workflow: `POST /evaluations/{id}/cancel`, `POST /evaluations/{id}/approve`
+- Reference data: `GET /departments`
+
+**Technical Improvements:**
+- Data normalization rules (currency, timezone, FY format)
+- Two-Stage Bidding method explained
+- Cartel Detection clarified as Beta/advisory only
+- Error recovery workflow for LLM failures
+- Weight validation (must sum to 100%)
 
 ---
 
