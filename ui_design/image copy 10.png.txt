@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Financial Evaluation Results - ProcureAI</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#136dec",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101822",
+              "border-light": "#cfd9e7",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#0d131b] dark:text-white font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] bg-white dark:bg-[#1a2634] px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-[#0d131b] dark:text-white">
+<div class="size-8 flex items-center justify-center bg-primary/10 rounded text-primary">
+<span class="material-symbols-outlined">gavel</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">ProcureAI</h2>
+</div>
+<div class="hidden md:flex items-center gap-9">
+<a class="text-[#0d131b] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Home</a>
+<a class="text-[#0d131b] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Bids</a>
+<a class="text-[#0d131b] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Reports</a>
+<a class="text-[#0d131b] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Audit Logs</a>
+</div>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<label class="hidden md:flex flex-col min-w-40 !h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded h-full">
+<div class="text-[#4c6c9a] flex border-none bg-[#e7ecf3] dark:bg-gray-700 items-center justify-center pl-4 rounded-l border-r-0">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded text-[#0d131b] dark:text-white focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] dark:bg-gray-700 focus:border-none h-full placeholder:text-[#4c6c9a] px-4 rounded-l-none border-l-0 pl-2 text-sm font-normal leading-normal" placeholder="Search bids..." value=""/>
+</div>
+</label>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-gray-200" data-alt="User profile avatar placeholder with abstract gradient" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBnlXim73QkKIMcqw2o_xH0mMn8DPVVFk0LxxWOIKc4-4YFx014uqSztlmBQueiS61cCKRgR2aUi3LiMpI-wOCm1M8vhMYdbVq1ljWKgvrFQRJECsRIvH3dlidzA_1IlK7uKlurPJOXP2mPTDIX9j-ho5tGJf-fG5WdTZtM63Uc2s3AZ-wQ4k56WhH59nVDUKWe5-9f0GSmRxRiTlP8sLBaTQhVJdJuLOyoUrYbaWnhOQYiMhrHLl5FjitapbqNIZiIIgg99WKgiCM");'></div>
+</div>
+</header>
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-6 md:px-20 lg:px-40 flex flex-1 justify-center py-8">
+<div class="layout-content-container flex flex-col max-w-[1200px] flex-1 gap-6">
+<!-- Breadcrumbs -->
+<div class="flex flex-wrap gap-2 px-4">
+<a class="text-[#4c6c9a] text-sm font-medium hover:underline" href="#">Home</a>
+<span class="text-[#4c6c9a] text-sm font-medium">/</span>
+<a class="text-[#4c6c9a] text-sm font-medium hover:underline" href="#">Bids</a>
+<span class="text-[#4c6c9a] text-sm font-medium">/</span>
+<a class="text-[#4c6c9a] text-sm font-medium hover:underline" href="#">Bid #1234</a>
+<span class="text-[#4c6c9a] text-sm font-medium">/</span>
+<span class="text-[#0d131b] dark:text-white text-sm font-medium">Evaluation Results</span>
+</div>
+<!-- Page Heading & Actions -->
+<div class="flex flex-wrap justify-between items-end gap-4 px-4">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3">
+<h1 class="text-[#0d131b] dark:text-white text-3xl font-bold leading-tight tracking-[-0.033em]">Financial Evaluation Results</h1>
+<span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded font-bold border border-green-200 uppercase tracking-wide">Evaluation Complete</span>
+</div>
+<p class="text-[#4c6c9a] text-sm font-normal">Bid Ref: GEM/2023/B/123456 • Evaluation finalized on Oct 24, 2023</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center justify-center gap-2 h-10 px-4 bg-white dark:bg-gray-800 border border-[#cfd9e7] hover:bg-gray-50 rounded text-[#0d131b] dark:text-white text-sm font-semibold transition-all">
+<span class="material-symbols-outlined text-[20px]">print</span>
+<span>Print Summary</span>
+</button>
+<button class="flex items-center justify-center gap-2 h-10 px-4 bg-primary hover:bg-blue-600 rounded text-white text-sm font-bold shadow-sm transition-all">
+<span class="material-symbols-outlined text-[20px]">download</span>
+<span>Export Report</span>
+</button>
+</div>
+</div>
+<!-- Tabs -->
+<div class="border-b border-[#cfd9e7] px-4">
+<div class="flex gap-8">
+<a class="group flex flex-col items-center justify-center border-b-[3px] border-b-transparent pb-3 pt-2 hover:border-b-gray-300 transition-all" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#4c6c9a] text-[20px] group-hover:text-gray-600">assignment</span>
+<p class="text-[#4c6c9a] group-hover:text-gray-600 text-sm font-medium">Technical Scores</p>
+</div>
+</a>
+<a class="flex flex-col items-center justify-center border-b-[3px] border-b-primary pb-3 pt-2" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">payments</span>
+<p class="text-primary text-sm font-bold">Financial Scores</p>
+</div>
+</a>
+<a class="group flex flex-col items-center justify-center border-b-[3px] border-b-transparent pb-3 pt-2 hover:border-b-gray-300 transition-all" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#4c6c9a] text-[20px] group-hover:text-gray-600">trophy</span>
+<p class="text-[#4c6c9a] group-hover:text-gray-600 text-sm font-medium">Final Ranking</p>
+</div>
+</a>
+</div>
+</div>
+<!-- Hero / Stats Section (L1 Summary) -->
+<div class="px-4">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- L1 Vendor Card -->
+<div class="flex flex-col gap-1 rounded bg-white dark:bg-gray-800 p-6 border border-[#cfd9e7] shadow-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl text-primary">emoji_events</span>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary">verified</span>
+<p class="text-[#4c6c9a] text-sm font-semibold uppercase tracking-wider">L1 Winner</p>
+</div>
+<p class="text-[#0d131b] dark:text-white text-xl font-bold leading-tight truncate">Alpha Tech Solutions</p>
+<p class="text-[#4c6c9a] text-sm mt-1">Vendor ID: V-883920</p>
+</div>
+<!-- Winning Quote Card -->
+<div class="flex flex-col gap-1 rounded bg-white dark:bg-gray-800 p-6 border border-[#cfd9e7] shadow-sm">
+<p class="text-[#4c6c9a] text-sm font-medium">Winning Quote (Total)</p>
+<p class="text-[#0d131b] dark:text-white text-3xl font-bold leading-tight font-mono tracking-tight">₹ 12,45,000</p>
+<p class="text-green-600 text-xs font-medium flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]">trending_down</span>
+                                    12% below estimated cost
+                                </p>
+</div>
+<!-- Score Card -->
+<div class="flex flex-col gap-1 rounded bg-white dark:bg-gray-800 p-6 border border-[#cfd9e7] shadow-sm">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-[#4c6c9a] text-sm font-medium">Financial Score</p>
+<p class="text-primary text-3xl font-bold leading-tight mt-1">100<span class="text-lg text-[#4c6c9a] font-normal">/100</span></p>
+</div>
+<div class="size-10 rounded-full bg-blue-50 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">calculate</span>
+</div>
+</div>
+<p class="text-[#4c6c9a] text-xs mt-2">Based on relative pricing formula</p>
+</div>
+</div>
+</div>
+<!-- Methodology Info Block -->
+<div class="px-4">
+<div class="flex items-start gap-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded">
+<span class="material-symbols-outlined text-primary mt-0.5">info</span>
+<div class="flex-1">
+<h4 class="text-sm font-bold text-[#0d131b] dark:text-white mb-1">Scoring Methodology: QCBS (Quality and Cost Based Selection)</h4>
+<p class="text-sm text-[#4c6c9a] dark:text-gray-300 leading-relaxed">
+                                    Financial scores are calculated using the formula: <code class="bg-white dark:bg-gray-800 px-1 py-0.5 rounded border border-blue-200 dark:border-gray-600 font-mono text-xs text-primary">Sf = 100 × (Fm / F)</code>, where <strong>Sf</strong> is the financial score, <strong>Fm</strong> is the lowest price, and <strong>F</strong> is the price of the proposal under consideration.
+                                </p>
+</div>
+</div>
+</div>
+<!-- Detailed Table -->
+<div class="px-4 pb-8">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-bold text-[#0d131b] dark:text-white">Vendor Comparison</h3>
+<div class="flex gap-2">
+<button class="text-[#4c6c9a] text-sm font-medium hover:text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">filter_list</span> Filter
+                                </button>
+<button class="text-[#4c6c9a] text-sm font-medium hover:text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">sort</span> Sort
+                                </button>
+</div>
+</div>
+<div class="overflow-x-auto bg-white dark:bg-gray-800 border border-[#cfd9e7] rounded shadow-sm">
+<table class="w-full text-sm text-left">
+<thead class="bg-[#f6f7f8] dark:bg-gray-700 border-b border-[#cfd9e7]">
+<tr>
+<th class="px-6 py-4 font-semibold text-[#4c6c9a] uppercase tracking-wider text-xs w-16">Rank</th>
+<th class="px-6 py-4 font-semibold text-[#4c6c9a] uppercase tracking-wider text-xs">Vendor Details</th>
+<th class="px-6 py-4 font-semibold text-[#4c6c9a] uppercase tracking-wider text-xs text-right">Quoted Price (INR)</th>
+<th class="px-6 py-4 font-semibold text-[#4c6c9a] uppercase tracking-wider text-xs text-right">Adjustments</th>
+<th class="px-6 py-4 font-semibold text-[#4c6c9a] uppercase tracking-wider text-xs text-right">Evaluated Price</th>
+<th class="px-6 py-4 font-semibold text-[#4c6c9a] uppercase tracking-wider text-xs text-center">Score</th>
+<th class="px-6 py-4 font-semibold text-[#4c6c9a] uppercase tracking-wider text-xs text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#e7ecf3] dark:divide-gray-700">
+<!-- L1 Row -->
+<tr class="bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+<td class="px-6 py-4">
+<div class="size-8 rounded-full bg-yellow-100 border border-yellow-200 flex items-center justify-center text-yellow-700 font-bold text-xs">L1</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-[#0d131b] dark:text-white">Alpha Tech Solutions</span>
+<span class="text-xs text-[#4c6c9a]">MSE | Startup India Certified</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right font-mono text-[#0d131b] dark:text-white">₹ 12,45,000</td>
+<td class="px-6 py-4 text-right">
+<span class="text-[#4c6c9a] text-xs italic">-</span>
+</td>
+<td class="px-6 py-4 text-right font-mono font-bold text-primary">₹ 12,45,000</td>
+<td class="px-6 py-4 text-center">
+<span class="bg-green-100 text-green-700 py-1 px-3 rounded-full text-xs font-bold border border-green-200">100.00</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="text-[#4c6c9a] hover:text-primary transition-colors" title="View Breakdown">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="text-[#4c6c9a] hover:text-primary transition-colors" title="Download Quote">
+<span class="material-symbols-outlined text-[20px]">description</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- L2 Row -->
+<tr class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+<td class="px-6 py-4">
+<span class="text-[#4c6c9a] font-medium ml-2">L2</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-medium text-[#0d131b] dark:text-white">Beta Infra Corp.</span>
+<span class="text-xs text-[#4c6c9a]">Large Enterprise</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right font-mono text-[#0d131b] dark:text-white">₹ 14,00,000</td>
+<td class="px-6 py-4 text-right">
+<div class="flex flex-col items-end">
+<span class="text-red-600 text-xs font-medium font-mono">+ ₹ 50,000</span>
+<span class="text-[10px] text-[#4c6c9a]">Tax Adj.</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right font-mono font-medium text-[#0d131b] dark:text-white">₹ 14,50,000</td>
+<td class="px-6 py-4 text-center">
+<span class="bg-gray-100 text-gray-700 py-1 px-3 rounded-full text-xs font-bold border border-gray-200">85.86</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="text-[#4c6c9a] hover:text-primary transition-colors" title="View Breakdown">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="text-[#4c6c9a] hover:text-primary transition-colors" title="Download Quote">
+<span class="material-symbols-outlined text-[20px]">description</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- L3 Row -->
+<tr class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+<td class="px-6 py-4">
+<span class="text-[#4c6c9a] font-medium ml-2">L3</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-medium text-[#0d131b] dark:text-white">Gamma Systems Ltd</span>
+<span class="text-xs text-[#4c6c9a]">MSE</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right font-mono text-[#0d131b] dark:text-white">₹ 15,50,000</td>
+<td class="px-6 py-4 text-right">
+<span class="text-[#4c6c9a] text-xs italic">-</span>
+</td>
+<td class="px-6 py-4 text-right font-mono font-medium text-[#0d131b] dark:text-white">₹ 15,50,000</td>
+<td class="px-6 py-4 text-center">
+<span class="bg-gray-100 text-gray-700 py-1 px-3 rounded-full text-xs font-bold border border-gray-200">80.32</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="text-[#4c6c9a] hover:text-primary transition-colors" title="View Breakdown">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="text-[#4c6c9a] hover:text-primary transition-colors" title="Download Quote">
+<span class="material-symbols-outlined text-[20px]">description</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Disqualified Row -->
+<tr class="bg-red-50/30 dark:bg-red-900/5 hover:bg-red-50/50 dark:hover:bg-red-900/10 transition-colors">
+<td class="px-6 py-4">
+<span class="text-[#4c6c9a] font-medium ml-2">-</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-medium text-gray-500 dark:text-gray-400">Delta Constructions</span>
+<span class="text-xs text-red-500 font-medium">Technically Disqualified</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right font-mono text-gray-400">Locked</td>
+<td class="px-6 py-4 text-right">
+<span class="text-gray-400 text-xs italic">-</span>
+</td>
+<td class="px-6 py-4 text-right font-mono font-medium text-gray-400">N/A</td>
+<td class="px-6 py-4 text-center">
+<span class="text-gray-400 text-xs font-bold">N/A</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-gray-400 hover:text-gray-600 transition-colors cursor-not-allowed">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Footer -->
+<div class="px-4 py-6 border-t border-[#cfd9e7] mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-[#4c6c9a]">
+<p>© 2023 ProcureAI Government Solutions. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="hover:text-primary" href="#">Evaluation Guidelines</a>
+<a class="hover:text-primary" href="#">Help &amp; Support</a>
+<a class="hover:text-primary" href="#">Audit Trail</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

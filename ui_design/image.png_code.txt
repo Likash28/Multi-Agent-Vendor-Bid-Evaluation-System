@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vendor Bid Evaluation Portal - Login</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#234e8b",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#13181f",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#101419] dark:text-white h-screen overflow-hidden">
+<div class="relative flex h-full w-full flex-row">
+<!-- Left Panel: Hero Section (Desktop only) -->
+<div class="hidden lg:flex w-1/2 relative flex-col justify-between overflow-hidden bg-[#234e8b]">
+<!-- Background Image with Overlay -->
+<div class="absolute inset-0 z-0">
+<div class="absolute inset-0 bg-gradient-to-br from-[#FF9933]/90 to-[#234e8b]/90 mix-blend-multiply z-10"></div>
+<div class="h-full w-full bg-cover bg-center" data-alt="Abstract geometric pattern with saffron and blue gradient" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAfJS5TW1uUqY8PORKIrGRN7o671pwVlrJcL2V8rj1jU9OOCiUU_QWP8Xzwsg5ZXMas3BjgFcPkHuDqk-r6HX-0_OL2ZI3H2nat_bbEQMmV0FPcjHdNOIi_n01Ns5Jxrv-RJWFVkPdTnCby1zBclajlpf5TVid4R_OlkDO2_c5pPU4N1VdMp6M3AFvimRnotJX1Uicv4nCpzZkEtUoYDaO3BDCaGxLHqnXX2S-N-_frf5xHBkdtnWTeXUPhRoIUyLQT4WmXBSn8jAw');">
+</div>
+</div>
+<!-- Hero Content -->
+<div class="relative z-20 flex flex-col h-full justify-between p-16">
+<!-- Branding Top Left -->
+<div class="flex items-center gap-3 text-white/90">
+<span class="material-symbols-outlined text-3xl">account_balance</span>
+<span class="text-lg font-bold tracking-wide uppercase">GOI Procurement</span>
+</div>
+<!-- Main Hero Text -->
+<div class="max-w-xl space-y-6">
+<h1 class="text-white text-5xl font-black leading-tight tracking-[-0.033em]">
+                        Vendor Bid <br/>Evaluation Portal
+                    </h1>
+<div class="h-1 w-20 bg-[#FF9933] rounded-full"></div>
+<p class="text-white/80 text-lg font-normal leading-relaxed">
+                        Secure, transparent, and efficient procurement for the Government of India. 
+                        Streamlining the tender process with advanced evaluation tools.
+                    </p>
+</div>
+<!-- Bottom Copyright/Info -->
+<div class="flex gap-6 text-white/60 text-sm">
+<span>Ministry of Electronics &amp; IT</span>
+<span>•</span>
+<span>National Informatics Centre</span>
+</div>
+</div>
+</div>
+<!-- Right Panel: Login Form -->
+<div class="w-full lg:w-1/2 flex flex-col h-full bg-white dark:bg-[#13181f] relative overflow-y-auto">
+<div class="flex-1 flex flex-col justify-center items-center px-6 py-12 sm:px-12 md:px-24">
+<div class="w-full max-w-[480px] flex flex-col gap-8">
+<!-- Form Header -->
+<div class="flex flex-col items-center text-center gap-5">
+<img alt="Emblem of India" class="h-20 w-auto" data-alt="National Emblem of India - Lion Capital of Ashoka" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdEPmz1RcioKCuEKXIXub2B4MUB9zPK7ocWpd5B-C1c-1JUk4og1DYMU24KKyySPWP3_1xP-PMA8CNiby-CyOa7V_r9oGjRWSGvCRlCXUL7ZSdMHwltYtMcGThploh8Oy1GH0ZhgN6fwiwYkX2dJpUZxsP3y8KnSkLaOTNTGXWwHk4J7My_o2fEQdkJIwcJVSLlgy449zUX8ta4tlyQHfrKuaamiTgC3zwf86-db-VpfBTCn_RxOjb2AmDXRfSE0bDYsPu757sk88"/>
+<div class="space-y-2">
+<h2 class="text-[#101419] dark:text-white text-2xl font-bold leading-tight">Welcome Back</h2>
+<p class="text-[#576e8e] dark:text-gray-400 text-sm">Please enter your details to sign in.</p>
+</div>
+</div>
+<!-- Input Fields -->
+<form class="flex flex-col gap-6" onsubmit="event.preventDefault();">
+<!-- Email Input -->
+<div class="flex flex-col gap-2">
+<label class="text-[#101419] dark:text-white text-sm font-medium leading-normal">Official Email ID</label>
+<div class="flex w-full items-stretch rounded group focus-within:ring-1 focus-within:ring-primary focus-within:border-primary transition-all">
+<input class="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-l border border-[#d3dae4] dark:border-gray-600 bg-gray-50 dark:bg-[#1a202c] h-12 px-4 text-[#101419] dark:text-white placeholder:text-[#576e8e] text-base font-normal leading-normal focus:outline-none border-r-0" placeholder="username@gov.in" type="email"/>
+<div class="text-[#576e8e] flex border border-[#d3dae4] dark:border-gray-600 border-l-0 bg-gray-50 dark:bg-[#1a202c] items-center justify-center pr-4 rounded-r">
+<span class="material-symbols-outlined">mail</span>
+</div>
+</div>
+</div>
+<!-- Password Input -->
+<div class="flex flex-col gap-2">
+<label class="text-[#101419] dark:text-white text-sm font-medium leading-normal">Password</label>
+<div class="flex w-full items-stretch rounded group focus-within:ring-1 focus-within:ring-primary focus-within:border-primary transition-all">
+<input class="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-l border border-[#d3dae4] dark:border-gray-600 bg-gray-50 dark:bg-[#1a202c] h-12 px-4 text-[#101419] dark:text-white placeholder:text-[#576e8e] text-base font-normal leading-normal focus:outline-none border-r-0" placeholder="Enter your password" type="password"/>
+<div class="text-[#576e8e] flex border border-[#d3dae4] dark:border-gray-600 border-l-0 bg-gray-50 dark:bg-[#1a202c] items-center justify-center pr-4 rounded-r cursor-pointer hover:text-primary transition-colors">
+<span class="material-symbols-outlined">visibility_off</span>
+</div>
+</div>
+</div>
+<!-- Options Row -->
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-3 cursor-pointer group">
+<div class="relative flex items-center justify-center w-5 h-5">
+<input class="peer h-4 w-4 rounded border-[#d3dae4] border-2 text-primary focus:ring-offset-0 focus:ring-0 checked:bg-primary checked:border-primary transition-all cursor-pointer" type="checkbox"/>
+</div>
+<span class="text-[#101419] dark:text-gray-300 text-sm font-normal group-hover:text-primary transition-colors">Remember me</span>
+</label>
+<button class="text-primary text-sm font-medium hover:underline">Forgot password?</button>
+</div>
+<!-- Primary Action -->
+<button class="flex w-full items-center justify-center rounded bg-primary h-12 px-5 text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-[#1d4278] transition-colors shadow-sm">
+                            Sign In
+                        </button>
+<!-- Divider -->
+<div class="relative flex py-2 items-center">
+<div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
+<span class="flex-shrink-0 mx-4 text-xs text-gray-400 font-medium">OR LOGIN WITH</span>
+<div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
+</div>
+<!-- SSO Action -->
+<button class="flex w-full items-center justify-center gap-2 rounded border border-[#d3dae4] dark:border-gray-600 bg-transparent h-12 px-5 text-[#101419] dark:text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-[20px]">badge</span>
+<span>Jan Parichay</span>
+</button>
+</form>
+</div>
+</div>
+<!-- Footer -->
+<div class="w-full py-6 px-6 border-t border-gray-100 dark:border-gray-800">
+<div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-[#576e8e]">
+<span>© 2024 Government of India</span>
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Use</a>
+<a class="hover:text-primary transition-colors" href="#">Help Desk</a>
+</div>
+</div>
+</div>
+</div>
+</body></html>

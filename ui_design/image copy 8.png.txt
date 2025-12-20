@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GovProcure AI - Compliance Results</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#136dec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101822",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#0d131b] dark:text-white font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] bg-white dark:bg-[#1a202c] dark:border-[#2d3748] px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-[#0d131b] dark:text-white">
+<div class="size-8 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">gavel</span>
+</div>
+<h2 class="text-[#0d131b] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">GovProcure AI</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9 hidden md:flex">
+<a class="text-[#0d131b] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-[#0d131b] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Active Tenders</a>
+<a class="text-[#0d131b] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Evaluations</a>
+<a class="text-[#0d131b] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Reports</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-[#0d131b] dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-gray-200" data-alt="Profile picture of the logged in officer" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBwQKjfqeEjivpbDJg2Vs0uqch6YKvUEelTfnS5sGCCoNMwn66CSMPjXsGndbx5NX-oNa-xFXKnVxOyjo1djgFccOBAHKuAs_kEPrcchgaSIspjintu9FHAnYlMubgbJvvUCVwUbGuMtU2G7GjdIamsPGY8M3Sjgdupk3uuQqw7kQGZTdNlLgVldSNnMZZLzhv9mvKoIZWsW_YqMZTqQWbyilADWNnTJNNGXQRbQ6eks6DsdBo3hNS-LZDRwtRA992mRDa1ok8CWfw");'></div>
+</div>
+</div>
+</header>
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-4 md:px-10 lg:px-40 flex flex-1 justify-center py-5">
+<div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+<!-- Breadcrumbs -->
+<div class="flex flex-wrap gap-2 px-4 py-2">
+<a class="text-[#4c6c9a] dark:text-gray-400 text-sm font-medium leading-normal hover:underline" href="#">Evaluations</a>
+<span class="text-[#4c6c9a] dark:text-gray-500 text-sm font-medium leading-normal">/</span>
+<a class="text-[#4c6c9a] dark:text-gray-400 text-sm font-medium leading-normal hover:underline" href="#">Tender #IND-882</a>
+<span class="text-[#4c6c9a] dark:text-gray-500 text-sm font-medium leading-normal">/</span>
+<span class="text-[#0d131b] dark:text-white text-sm font-medium leading-normal">Compliance Results</span>
+</div>
+<!-- Page Heading -->
+<div class="flex flex-wrap justify-between gap-3 px-4 py-4 items-end">
+<div class="flex min-w-72 flex-col gap-2">
+<h1 class="text-[#0d131b] dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">Evaluation Results: Compliance</h1>
+<p class="text-[#4c6c9a] dark:text-gray-400 text-base font-normal leading-normal">Tender ID: IND-GOV-2024-882 • Procurement of Cloud Infrastructure Services</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center justify-center gap-2 overflow-hidden rounded h-10 px-4 bg-white dark:bg-[#2d3748] border border-[#cfd9e7] dark:border-[#4a5568] text-[#0d131b] dark:text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-50 transition-colors">
+<span class="material-symbols-outlined text-[20px]">download</span>
+<span class="truncate">Export Report</span>
+</button>
+<button class="flex items-center justify-center gap-2 overflow-hidden rounded h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] shadow-sm hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined text-[20px]">check</span>
+<span class="truncate">Finalize Compliance</span>
+</button>
+</div>
+</div>
+<!-- Tabs -->
+<div class="pb-6">
+<div class="flex border-b border-[#cfd9e7] dark:border-[#2d3748] px-4 gap-8">
+<a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4c6c9a] hover:text-primary pb-[13px] pt-4 transition-colors" href="#">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Technical Evaluation</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4c6c9a] hover:text-primary pb-[13px] pt-4 transition-colors" href="#">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Financial Bid</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-[3px] border-b-primary text-[#0d131b] dark:text-white pb-[13px] pt-4" href="#">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Compliance Check</p>
+</a>
+</div>
+</div>
+<!-- Stats Cards -->
+<div class="flex flex-wrap gap-4 px-4 pb-6">
+<div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded bg-white dark:bg-[#1a202c] p-5 border border-[#cfd9e7] dark:border-[#2d3748] shadow-sm">
+<div class="flex justify-between items-start">
+<p class="text-[#4c6c9a] dark:text-gray-400 text-sm font-medium leading-normal">Participating Vendors</p>
+<span class="material-symbols-outlined text-[#4c6c9a]">groups</span>
+</div>
+<p class="text-[#0d131b] dark:text-white tracking-light text-2xl font-bold leading-tight">12</p>
+</div>
+<div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded bg-white dark:bg-[#1a202c] p-5 border border-[#cfd9e7] dark:border-[#2d3748] shadow-sm">
+<div class="flex justify-between items-start">
+<p class="text-[#4c6c9a] dark:text-gray-400 text-sm font-medium leading-normal">Qualified Vendors</p>
+<span class="material-symbols-outlined text-green-600">check_circle</span>
+</div>
+<p class="text-[#0d131b] dark:text-white tracking-light text-2xl font-bold leading-tight">8</p>
+</div>
+<div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded bg-white dark:bg-[#1a202c] p-5 border border-[#cfd9e7] dark:border-[#2d3748] shadow-sm">
+<div class="flex justify-between items-start">
+<p class="text-[#4c6c9a] dark:text-gray-400 text-sm font-medium leading-normal">Disqualified Vendors</p>
+<span class="material-symbols-outlined text-red-600">cancel</span>
+</div>
+<p class="text-[#0d131b] dark:text-white tracking-light text-2xl font-bold leading-tight">4</p>
+</div>
+</div>
+<!-- Filter & Search Toolbar -->
+<div class="px-4 pb-4">
+<div class="flex flex-wrap gap-4 items-center bg-white dark:bg-[#1a202c] p-3 rounded border border-[#cfd9e7] dark:border-[#2d3748]">
+<div class="relative flex-1 min-w-[200px]">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#4c6c9a]">search</span>
+<input class="w-full h-10 pl-10 pr-4 rounded bg-background-light dark:bg-background-dark border-transparent focus:border-primary focus:ring-0 text-sm text-[#0d131b] dark:text-white placeholder-[#4c6c9a]" placeholder="Search by Vendor Name or ID" type="text"/>
+</div>
+<div class="h-8 w-[1px] bg-[#cfd9e7] dark:bg-[#2d3748] hidden sm:block"></div>
+<div class="flex gap-3 items-center w-full sm:w-auto">
+<span class="material-symbols-outlined text-[#4c6c9a]">filter_list</span>
+<select class="h-10 px-3 rounded bg-background-light dark:bg-background-dark border-transparent focus:border-primary focus:ring-0 text-sm text-[#0d131b] dark:text-white min-w-[140px]">
+<option>All Statuses</option>
+<option>Compliant</option>
+<option>Non-Compliant</option>
+<option>Under Review</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Vendors List (Accordion Style) -->
+<div class="px-4 pb-10 space-y-4">
+<!-- Vendor 1: Compliant (Expanded) -->
+<div class="bg-white dark:bg-[#1a202c] rounded border border-[#cfd9e7] dark:border-[#2d3748] overflow-hidden shadow-sm">
+<!-- Header Row -->
+<div class="flex flex-wrap items-center justify-between p-4 gap-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#252f3f] transition-colors border-l-4 border-l-green-500">
+<div class="flex items-center gap-4 min-w-[200px]">
+<div class="size-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-primary font-bold">IL</div>
+<div>
+<p class="text-[#0d131b] dark:text-white font-bold text-base">Infosys Ltd.</p>
+<p class="text-[#4c6c9a] text-xs">Bid ID: #882-INF-01</p>
+</div>
+</div>
+<div class="hidden sm:block text-sm text-[#4c6c9a]">Submitted: Oct 24, 2024</div>
+<div class="flex items-center gap-6">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold border border-green-200 dark:border-green-800">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+                                        Compliant
+                                    </span>
+<button class="text-[#4c6c9a] hover:text-primary">
+<span class="material-symbols-outlined">expand_less</span>
+</button>
+</div>
+</div>
+<!-- Expanded Content -->
+<div class="bg-background-light dark:bg-background-dark border-t border-[#cfd9e7] dark:border-[#2d3748] p-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Criterion Item -->
+<div class="bg-white dark:bg-[#1a202c] p-4 rounded border border-[#e7ecf3] dark:border-[#2d3748] flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#4c6c9a]">description</span>
+<p class="font-semibold text-sm text-[#0d131b] dark:text-white">GST Registration Certificate</p>
+</div>
+<span class="text-green-600 dark:text-green-400 text-xs font-bold bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded border border-green-100 dark:border-green-800">PASS</span>
+</div>
+<div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded text-xs text-[#4c6c9a] dark:text-blue-100 flex gap-2 items-start">
+<span class="material-symbols-outlined text-[16px] text-primary mt-0.5">smart_toy</span>
+<p><span class="font-bold text-primary">AI Note:</span> Valid certificate verified against GSTIN database. Registration active.</p>
+</div>
+<a class="text-xs text-primary font-medium hover:underline flex items-center gap-1 mt-auto" href="#">
+                                            View Document <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</div>
+<!-- Criterion Item -->
+<div class="bg-white dark:bg-[#1a202c] p-4 rounded border border-[#e7ecf3] dark:border-[#2d3748] flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#4c6c9a]">account_balance</span>
+<p class="font-semibold text-sm text-[#0d131b] dark:text-white">Bid Security (EMD)</p>
+</div>
+<span class="text-green-600 dark:text-green-400 text-xs font-bold bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded border border-green-100 dark:border-green-800">PASS</span>
+</div>
+<div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded text-xs text-[#4c6c9a] dark:text-blue-100 flex gap-2 items-start">
+<span class="material-symbols-outlined text-[16px] text-primary mt-0.5">smart_toy</span>
+<p><span class="font-bold text-primary">AI Note:</span> Bank Guarantee of ₹5,00,000 received. Issuing bank: HDFC.</p>
+</div>
+<a class="text-xs text-primary font-medium hover:underline flex items-center gap-1 mt-auto" href="#">
+                                            View Document <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</div>
+<!-- Criterion Item -->
+<div class="bg-white dark:bg-[#1a202c] p-4 rounded border border-[#e7ecf3] dark:border-[#2d3748] flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#4c6c9a]">trending_up</span>
+<p class="font-semibold text-sm text-[#0d131b] dark:text-white">Financial Turnover Criteria</p>
+</div>
+<span class="text-green-600 dark:text-green-400 text-xs font-bold bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded border border-green-100 dark:border-green-800">PASS</span>
+</div>
+<div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded text-xs text-[#4c6c9a] dark:text-blue-100 flex gap-2 items-start">
+<span class="material-symbols-outlined text-[16px] text-primary mt-0.5">smart_toy</span>
+<p><span class="font-bold text-primary">AI Note:</span> Annual turnover &gt; ₹50 Cr for last 3 FYs confirmed from audit reports.</p>
+</div>
+<a class="text-xs text-primary font-medium hover:underline flex items-center gap-1 mt-auto" href="#">
+                                            View Document <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</div>
+<!-- Criterion Item -->
+<div class="bg-white dark:bg-[#1a202c] p-4 rounded border border-[#e7ecf3] dark:border-[#2d3748] flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#4c6c9a]">history</span>
+<p class="font-semibold text-sm text-[#0d131b] dark:text-white">Past Performance</p>
+</div>
+<span class="text-green-600 dark:text-green-400 text-xs font-bold bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded border border-green-100 dark:border-green-800">PASS</span>
+</div>
+<div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded text-xs text-[#4c6c9a] dark:text-blue-100 flex gap-2 items-start">
+<span class="material-symbols-outlined text-[16px] text-primary mt-0.5">smart_toy</span>
+<p><span class="font-bold text-primary">AI Note:</span> 3 similar government projects completed in last 5 years verified.</p>
+</div>
+<a class="text-xs text-primary font-medium hover:underline flex items-center gap-1 mt-auto" href="#">
+                                            View Document <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- Vendor 2: Non-Compliant (Collapsed) -->
+<div class="bg-white dark:bg-[#1a202c] rounded border border-[#cfd9e7] dark:border-[#2d3748] shadow-sm">
+<div class="flex flex-wrap items-center justify-between p-4 gap-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#252f3f] transition-colors border-l-4 border-l-red-500">
+<div class="flex items-center gap-4 min-w-[200px]">
+<div class="size-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-700 dark:text-purple-300 font-bold">TS</div>
+<div>
+<p class="text-[#0d131b] dark:text-white font-bold text-base">TechSolutions Pvt Ltd.</p>
+<p class="text-[#4c6c9a] text-xs">Bid ID: #882-TEC-05</p>
+</div>
+</div>
+<div class="hidden sm:block text-sm text-[#4c6c9a]">Submitted: Oct 25, 2024</div>
+<div class="flex items-center gap-6">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-bold border border-red-200 dark:border-red-800">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+                                        Non-Compliant
+                                    </span>
+<button class="text-[#4c6c9a] hover:text-primary">
+<span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</div>
+<!-- Just showing a hint of the failure without expanding fully for demo -->
+<div class="px-4 pb-2">
+<div class="flex items-center gap-2 mb-3">
+<span class="text-xs text-red-600 font-medium">Critical Failure:</span>
+<span class="text-xs text-[#4c6c9a]">Bid Security document is missing or invalid.</span>
+</div>
+</div>
+</div>
+<!-- Vendor 3: Compliant (Collapsed) -->
+<div class="bg-white dark:bg-[#1a202c] rounded border border-[#cfd9e7] dark:border-[#2d3748] shadow-sm">
+<div class="flex flex-wrap items-center justify-between p-4 gap-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#252f3f] transition-colors border-l-4 border-l-green-500">
+<div class="flex items-center gap-4 min-w-[200px]">
+<div class="size-10 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center text-orange-700 dark:text-orange-300 font-bold">WI</div>
+<div>
+<p class="text-[#0d131b] dark:text-white font-bold text-base">Wipro Enterprises</p>
+<p class="text-[#4c6c9a] text-xs">Bid ID: #882-WIP-03</p>
+</div>
+</div>
+<div class="hidden sm:block text-sm text-[#4c6c9a]">Submitted: Oct 24, 2024</div>
+<div class="flex items-center gap-6">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold border border-green-200 dark:border-green-800">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+                                        Compliant
+                                    </span>
+<button class="text-[#4c6c9a] hover:text-primary">
+<span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Vendor 4: Under Review (Collapsed) -->
+<div class="bg-white dark:bg-[#1a202c] rounded border border-[#cfd9e7] dark:border-[#2d3748] shadow-sm">
+<div class="flex flex-wrap items-center justify-between p-4 gap-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#252f3f] transition-colors border-l-4 border-l-yellow-500">
+<div class="flex items-center gap-4 min-w-[200px]">
+<div class="size-10 rounded-full bg-teal-100 dark:bg-teal-900 flex items-center justify-center text-teal-700 dark:text-teal-300 font-bold">GC</div>
+<div>
+<p class="text-[#0d131b] dark:text-white font-bold text-base">Global Connect Inc.</p>
+<p class="text-[#4c6c9a] text-xs">Bid ID: #882-GLO-08</p>
+</div>
+</div>
+<div class="hidden sm:block text-sm text-[#4c6c9a]">Submitted: Oct 26, 2024</div>
+<div class="flex items-center gap-6">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-bold border border-yellow-200 dark:border-yellow-800">
+<span class="material-symbols-outlined text-[16px]">hourglass_top</span>
+                                        Under Review
+                                    </span>
+<button class="text-[#4c6c9a] hover:text-primary">
+<span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

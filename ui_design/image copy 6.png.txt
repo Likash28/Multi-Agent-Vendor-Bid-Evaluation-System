@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>New Evaluation Wizard: Processing</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#136dec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101822",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#0d131b] dark:text-white font-display overflow-hidden">
+<div class="flex h-screen w-full">
+<!-- Sidebar -->
+<aside class="hidden w-64 flex-col border-r border-[#e7ecf3] dark:border-slate-700 bg-white dark:bg-[#1a2634] md:flex">
+<div class="flex h-full flex-col justify-between p-4">
+<div class="flex flex-col gap-4">
+<div class="flex gap-3 items-center mb-6 px-2">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 shadow-sm border border-slate-100 dark:border-slate-600" data-alt="Official government seal or department logo abstract" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCmFoqcYYfUJzGBCCUbPc3_hqMN45NtTJISSW2v0-9r_YgHwbQsk7JCU4e9B8XW-X9M9ylYAHFhcKf1RbwOfX8jh8Wd0rl7eyuk-q5k8vO4xdeSVlZ_rrRsgG2KutFcWLVLNp7PmCHNCpRowLUqvHmMCLx0noUSyUM4HRyc-mFp9P8qZU0teu8vK0orQjq0vhzMcfC-BbCh1abSU5H5P9W2j8kbBlIU8jx_oA_--p-w_j9vNMWGe65sRzxCrX8GxtWT-ZmlT2y94BQ");'></div>
+<div class="flex flex-col">
+<h1 class="text-base font-bold leading-normal dark:text-white">Procurement Admin</h1>
+<p class="text-[#4c6c9a] dark:text-slate-400 text-xs font-normal leading-normal">Dept. of Finance</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors group" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 group-hover:text-primary">dashboard</span>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal group-hover:text-primary">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors group" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 group-hover:text-primary">description</span>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal group-hover:text-primary">Tenders</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 dark:bg-primary/20 transition-colors" href="#">
+<span class="material-symbols-outlined text-primary fill-1">assignment</span>
+<p class="text-primary dark:text-primary-400 text-sm font-bold leading-normal">Evaluations</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors group" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 group-hover:text-primary">group</span>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal group-hover:text-primary">Vendors</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors group" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 group-hover:text-primary">analytics</span>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal group-hover:text-primary">Reports</p>
+</a>
+</nav>
+</div>
+<div class="px-3 py-2">
+<a class="flex items-center gap-3 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-sm font-medium">Sign Out</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex h-full flex-1 flex-col overflow-hidden relative">
+<!-- Top Header -->
+<header class="flex h-16 items-center justify-between border-b border-[#e7ecf3] dark:border-slate-700 bg-white dark:bg-[#1a2634] px-6 py-3 shadow-sm z-10">
+<div class="flex items-center gap-4">
+<!-- Mobile Menu Button (Visible only on small screens) -->
+<button class="md:hidden text-slate-500 hover:text-slate-700">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="flex items-center gap-2">
+<div class="bg-primary/10 p-1.5 rounded text-primary">
+<span class="material-symbols-outlined text-xl">smart_toy</span>
+</div>
+<h2 class="text-[#0d131b] dark:text-white text-lg font-bold leading-tight tracking-tight">GovProcure <span class="font-normal text-slate-500 dark:text-slate-400">AI Evaluation System</span></h2>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="relative text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-[#1a2634]"></span>
+</button>
+<div class="flex items-center gap-3 pl-6 border-l border-slate-200 dark:border-slate-600">
+<div class="text-right hidden sm:block">
+<p class="text-sm font-medium text-slate-900 dark:text-white">Amit Sharma</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Senior Evaluator</p>
+</div>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-9 ring-2 ring-slate-100 dark:ring-slate-700 cursor-pointer" data-alt="User profile picture of a professional man" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA46UV0kZt2fyP8w8Yz5lAo92fMruX5CYK8t0rmT4vDfR9S-jClqdyWeL_tFI14gaXiWK4FrYo6k3qVhEcDMphtepYycZkWGsnhKwzQICWWA4xVoj65JRTetbwlmNQTVffSWyjH3ByERa1wIsXwiZSgIO9irbr2KDsUDgupmyTr6IVn1UmmxBxBVaggDqqTlwZa-jBWfmvT8U1Z384as9antIh2py7w4pGo0m57jofYtgHa2_k9p2D0PkFvdV3Rden-JMuj_Fwxu38");'></div>
+</div>
+</div>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark p-6 md:p-10">
+<div class="mx-auto flex max-w-[1000px] flex-col gap-6">
+<!-- Page Heading -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
+<span>Evaluations</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span>New Evaluation Wizard</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-primary">Step 5</span>
+</div>
+<div class="flex items-start justify-between">
+<div class="flex flex-col gap-1">
+<h1 class="text-3xl font-bold tracking-tight text-[#0d131b] dark:text-white">Step 5: Processing (Live Updates)</h1>
+<p class="text-[#4c6c9a] dark:text-slate-400 text-base">The multi-agent system is currently evaluating the submitted bids against the RFP criteria.</p>
+</div>
+</div>
+</div>
+<!-- Main Progress Card -->
+<div class="flex flex-col rounded-xl bg-white dark:bg-[#1a2634] shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+<!-- Status Header & Progress Bar -->
+<div class="p-8 border-b border-slate-100 dark:border-slate-700/50">
+<div class="flex flex-col items-center justify-center text-center gap-6 max-w-2xl mx-auto">
+<h2 class="text-2xl font-bold text-[#0d131b] dark:text-white animate-pulse">Evaluation in Progress...</h2>
+<div class="w-full flex flex-col gap-3">
+<div class="flex justify-between items-end px-1">
+<p class="text-slate-600 dark:text-slate-300 text-sm font-medium">Estimated time remaining: <span class="text-[#0d131b] dark:text-white font-bold">2 minutes</span></p>
+<p class="text-primary font-bold text-lg">75%</p>
+</div>
+<div class="h-4 w-full rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
+<div class="h-full rounded-full bg-primary relative overflow-hidden transition-all duration-500 ease-out" style="width: 75%;">
+<div class="absolute inset-0 bg-white/20 w-full h-full animate-[shimmer_2s_infinite] skew-x-12" style="background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);"></div>
+</div>
+</div>
+<p class="text-xs text-slate-400 dark:text-slate-500 text-center mt-1">Please do not close this window or refresh the page.</p>
+</div>
+</div>
+</div>
+<!-- Split Content: Checklist & Live Log -->
+<div class="flex flex-col lg:flex-row h-auto lg:h-[500px]">
+<!-- Left: Checklist -->
+<div class="flex-1 p-8 lg:border-r border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-[#15202b]">
+<h3 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">checklist</span>
+                                    Workflow Steps
+                                </h3>
+<ul class="space-y-6 relative before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-200 dark:before:bg-slate-700 z-0">
+<!-- Completed Item -->
+<li class="relative z-10 flex gap-4 items-center group">
+<div class="size-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center border-2 border-green-500 text-green-600 dark:text-green-400 shadow-sm shrink-0">
+<span class="material-symbols-outlined">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-[#0d131b] dark:text-white">Tender Parsing</span>
+<span class="text-xs text-green-600 dark:text-green-400 font-medium">Completed</span>
+</div>
+</li>
+<!-- Completed Item -->
+<li class="relative z-10 flex gap-4 items-center group">
+<div class="size-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center border-2 border-green-500 text-green-600 dark:text-green-400 shadow-sm shrink-0">
+<span class="material-symbols-outlined">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-[#0d131b] dark:text-white">Bid Analysis</span>
+<span class="text-xs text-green-600 dark:text-green-400 font-medium">Completed</span>
+</div>
+</li>
+<!-- Completed Item -->
+<li class="relative z-10 flex gap-4 items-center group">
+<div class="size-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center border-2 border-green-500 text-green-600 dark:text-green-400 shadow-sm shrink-0">
+<span class="material-symbols-outlined">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-[#0d131b] dark:text-white">Compliance Verification</span>
+<span class="text-xs text-green-600 dark:text-green-400 font-medium">Completed</span>
+</div>
+</li>
+<!-- Active Item -->
+<li class="relative z-10 flex gap-4 items-center group">
+<div class="size-10 rounded-full bg-white dark:bg-[#1a2634] flex items-center justify-center border-2 border-primary text-primary shadow-lg shadow-primary/20 shrink-0">
+<span class="material-symbols-outlined animate-spin">progress_activity</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-primary">Technical Scoring</span>
+<span class="text-xs text-primary font-medium">In Progress...</span>
+</div>
+</li>
+<!-- Pending Item -->
+<li class="relative z-10 flex gap-4 items-center group opacity-50">
+<div class="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center border-2 border-slate-300 dark:border-slate-600 text-slate-400 shrink-0">
+<span class="material-symbols-outlined text-[20px]">horizontal_rule</span>
+</div>
+<div class="flex flex-col">
+<span class="font-medium text-[#0d131b] dark:text-white">Financial Scoring</span>
+<span class="text-xs text-slate-500">Pending</span>
+</div>
+</li>
+<!-- Pending Item -->
+<li class="relative z-10 flex gap-4 items-center group opacity-50">
+<div class="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center border-2 border-slate-300 dark:border-slate-600 text-slate-400 shrink-0">
+<span class="material-symbols-outlined text-[20px]">horizontal_rule</span>
+</div>
+<div class="flex flex-col">
+<span class="font-medium text-[#0d131b] dark:text-white">Report Generation</span>
+<span class="text-xs text-slate-500">Pending</span>
+</div>
+</li>
+</ul>
+</div>
+<!-- Right: Live Log -->
+<div class="flex-[1.5] p-0 flex flex-col bg-[#0d131b] dark:bg-black text-slate-300 font-mono text-sm overflow-hidden">
+<div class="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-[#151f2b] dark:bg-[#0a0f16]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-green-400 text-base">terminal</span>
+<span class="font-semibold text-slate-100">Live System Log</span>
+</div>
+<div class="flex gap-1.5">
+<div class="size-2.5 rounded-full bg-slate-600"></div>
+<div class="size-2.5 rounded-full bg-slate-600"></div>
+<div class="size-2.5 rounded-full bg-slate-600"></div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-3 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+<div class="flex gap-3 opacity-60">
+<span class="text-slate-500 shrink-0">[10:42:01]</span>
+<span class="text-green-500">INFO:</span>
+<span>Process initiated by user: Amit Sharma</span>
+</div>
+<div class="flex gap-3 opacity-60">
+<span class="text-slate-500 shrink-0">[10:42:02]</span>
+<span class="text-blue-400">SYSTEM:</span>
+<span>Loading Request for Proposal (RFP-2023-882)...</span>
+</div>
+<div class="flex gap-3 opacity-70">
+<span class="text-slate-500 shrink-0">[10:42:05]</span>
+<span class="text-yellow-400">AGENT_1:</span>
+<span>Parsing 5 vendor documents. PDF extraction complete.</span>
+</div>
+<div class="flex gap-3 opacity-80">
+<span class="text-slate-500 shrink-0">[10:42:15]</span>
+<span class="text-yellow-400">AGENT_2:</span>
+<span>Validating mandatory compliance criteria (Tax ID, Inc. Cert).</span>
+</div>
+<div class="flex gap-3">
+<span class="text-slate-500 shrink-0">[10:42:18]</span>
+<span class="text-green-500">SUCCESS:</span>
+<span>All 5 vendors passed preliminary compliance check.</span>
+</div>
+<div class="flex gap-3 border-l-2 border-primary pl-3 bg-primary/10 py-1">
+<span class="text-slate-500 shrink-0">[10:42:30]</span>
+<span class="text-primary font-bold">CURRENT:</span>
+<span class="text-white">Analyzing TechPro Solutions bid against Technical Criterion T1 (Experience)...</span>
+</div>
+<div class="flex gap-3 animate-pulse">
+<span class="text-slate-500 shrink-0">[10:42:32]</span>
+<span class="text-blue-400">PROCESSING:</span>
+<span>Extracting project history tables from page 42...</span>
+</div>
+<!-- Blinking cursor effect -->
+<div class="h-4 w-2 bg-primary animate-pulse mt-2"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Info -->
+<div class="flex justify-center text-center">
+<p class="text-xs text-slate-400 dark:text-slate-500">
+                            GovProcure Evaluation System v2.4.1 • Secure connection via TLS 1.3 • Authorized Access Only
+                        </p>
+</div>
+</div>
+</div>
+</main>
+</div>
+<style>
+        /* Custom animation for shimmer effect */
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) skewX(-15deg); }
+            100% { transform: translateX(200%) skewX(-15deg); }
+        }
+    </style>
+</body></html>

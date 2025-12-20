@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>New Evaluation Wizard - Step 3</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#136dec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101822",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "sans": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom range slider styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #136dec;
+            cursor: pointer;
+            margin-top: -8px;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #e2e8f0;
+            border-radius: 2px;
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+        
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<!-- Header / Navbar Mockup -->
+<header class="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+<div class="flex items-center gap-3">
+<div class="h-8 w-8 rounded bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-xl">gavel</span>
+</div>
+<h1 class="text-lg font-bold tracking-tight">GovProcure <span class="text-slate-400 font-normal mx-2">/</span> New Evaluation</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white font-medium text-sm">Cancel</button>
+<button class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white font-medium text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-lg">help</span> Help
+            </button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col items-center justify-start py-10 px-4 sm:px-6 lg:px-8">
+<div class="w-full max-w-[800px] flex flex-col gap-8">
+<!-- Step Progress -->
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-end">
+<span class="text-primary font-bold text-sm uppercase tracking-wider">Step 3 of 5</span>
+<span class="text-slate-500 dark:text-slate-400 text-sm">Configuration</span>
+</div>
+<div class="h-2 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-3/5 rounded-full transition-all duration-500 ease-out"></div>
+</div>
+</div>
+<!-- Page Title -->
+<div class="space-y-2">
+<h2 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Evaluation Configuration</h2>
+<p class="text-slate-500 dark:text-slate-400 text-lg">Define the evaluation method, weighting criteria, and compliance checks for this bid.</p>
+</div>
+<!-- Main Form Card -->
+<div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+<!-- Section 1: Evaluation Method -->
+<div class="p-8 border-b border-slate-100 dark:border-slate-700">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">tune</span> Evaluation Method
+                    </h3>
+<div class="grid grid-cols-1 gap-4" style="--radio-dot-svg: url('data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill=%27rgb(19,109,236)%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3ccircle cx=%278%27 cy=%278%27 r=%273%27/%3e%3c/svg%3e');">
+<!-- Option 1: L1 -->
+<label class="group relative flex cursor-pointer rounded-lg border border-slate-200 dark:border-slate-700 p-4 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5 has-[:checked]:ring-1 has-[:checked]:ring-primary">
+<div class="flex items-center h-full pt-1">
+<input class="h-5 w-5 border-2 border-slate-300 dark:border-slate-600 bg-transparent text-primary focus:ring-primary checked:border-primary checked:bg-[image:--radio-dot-svg] appearance-none checked:bg-none checked:after:content-[''] checked:after:block checked:after:w-2.5 checked:after:h-2.5 checked:after:bg-primary checked:after:rounded-full checked:after:m-auto checked:flex checked:justify-center checked:items-center" name="eval_method" type="radio"/>
+</div>
+<div class="ml-4 flex flex-col">
+<span class="font-semibold text-slate-900 dark:text-white">L1 (Lowest Price)</span>
+<span class="text-sm text-slate-500 dark:text-slate-400">Select based purely on the lowest financial bid meeting technical criteria.</span>
+</div>
+</label>
+<!-- Option 2: QCBS (Default) -->
+<label class="group relative flex cursor-pointer rounded-lg border border-primary bg-primary/5 ring-1 ring-primary p-4 hover:bg-primary/10 transition-colors">
+<div class="flex items-center h-full pt-1">
+<input checked="" class="h-5 w-5 border-2 border-primary bg-transparent text-primary focus:ring-primary checked:border-primary checked:bg-[image:--radio-dot-svg] appearance-none checked:bg-none checked:after:content-[''] checked:after:block checked:after:w-2.5 checked:after:h-2.5 checked:after:bg-primary checked:after:rounded-full checked:after:m-auto checked:flex checked:justify-center checked:items-center" name="eval_method" type="radio"/>
+</div>
+<div class="ml-4 flex flex-col">
+<span class="font-semibold text-slate-900 dark:text-white">QCBS (Quality &amp; Cost Based Selection)</span>
+<span class="text-sm text-slate-500 dark:text-slate-400">Weightage given to both technical score and financial bid to determine value.</span>
+</div>
+<div class="absolute right-4 top-4">
+<span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20">Recommended</span>
+</div>
+</label>
+<!-- Option 3: Two-Stage -->
+<label class="group relative flex cursor-pointer rounded-lg border border-slate-200 dark:border-slate-700 p-4 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5 has-[:checked]:ring-1 has-[:checked]:ring-primary">
+<div class="flex items-center h-full pt-1">
+<input class="h-5 w-5 border-2 border-slate-300 dark:border-slate-600 bg-transparent text-primary focus:ring-primary checked:border-primary checked:bg-[image:--radio-dot-svg] appearance-none checked:bg-none checked:after:content-[''] checked:after:block checked:after:w-2.5 checked:after:h-2.5 checked:after:bg-primary checked:after:rounded-full checked:after:m-auto checked:flex checked:justify-center checked:items-center" name="eval_method" type="radio"/>
+</div>
+<div class="ml-4 flex flex-col">
+<span class="font-semibold text-slate-900 dark:text-white">Two-Stage Bidding</span>
+<span class="text-sm text-slate-500 dark:text-slate-400">Technical and financial bids evaluated separately in distinct stages.</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Section 2: Weight Configuration (Conditional for QCBS) -->
+<div class="p-8 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">balance</span> Weight Configuration
+                    </h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+<!-- Weight Sliders -->
+<div class="col-span-1 md:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Technical</span>
+<span class="text-3xl font-bold text-primary">70%</span>
+</div>
+<div class="flex-1 mx-6 relative h-12 flex items-center">
+<!-- Custom Track Background -->
+<div class="absolute w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden flex">
+<div class="bg-primary h-full w-[70%]"></div>
+<div class="bg-green-500 h-full w-[30%]"></div>
+</div>
+<!-- Slider Handle Mockup (Visual only) -->
+<div class="absolute left-[70%] w-6 h-6 bg-white border-4 border-primary rounded-full shadow cursor-grab transform -translate-x-1/2 z-10 hover:scale-110 transition-transform"></div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Financial</span>
+<span class="text-3xl font-bold text-green-600">30%</span>
+</div>
+</div>
+<p class="text-xs text-slate-400 text-center">Drag the slider to adjust the balance between technical score and financial cost.</p>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="threshold">Qualification Threshold (Technical Score)</label>
+<div class="relative mt-1 rounded-md shadow-sm max-w-xs">
+<input class="block w-full rounded-md border-0 py-2.5 pl-4 pr-12 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-slate-900 dark:ring-slate-700 dark:text-white" id="threshold" name="threshold" placeholder="0-100" type="number" value="75"/>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+<span class="text-slate-500 sm:text-sm">%</span>
+</div>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400">Vendors scoring below this technical score will be disqualified automatically.</p>
+</div>
+</div>
+<!-- Section 3: Advanced Options -->
+<div class="p-8 bg-white dark:bg-slate-800">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">settings_suggest</span> Advanced Settings
+                    </h3>
+<div class="space-y-4">
+<div class="flex items-start">
+<div class="flex h-6 items-center">
+<input checked="" class="h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary dark:border-slate-600 dark:bg-slate-900" id="compliance" name="compliance" type="checkbox"/>
+</div>
+<div class="ml-3 text-sm leading-6">
+<label class="font-medium text-slate-900 dark:text-white" for="compliance">Enable AI compliance verification</label>
+<p class="text-slate-500 dark:text-slate-400">Automatically cross-check bid documents against mandatory tender requirements.</p>
+</div>
+</div>
+<div class="flex items-start">
+<div class="flex h-6 items-center">
+<input checked="" class="h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary dark:border-slate-600 dark:bg-slate-900" id="justification" name="justification" type="checkbox"/>
+</div>
+<div class="ml-3 text-sm leading-6">
+<label class="font-medium text-slate-900 dark:text-white" for="justification">Generate detailed justifications</label>
+<p class="text-slate-500 dark:text-slate-400">Create audit-ready reasoning logs for every score assigned by evaluators.</p>
+</div>
+</div>
+<div class="flex items-start p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-900/30">
+<div class="flex h-6 items-center">
+<input class="h-5 w-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600 dark:border-slate-600 dark:bg-slate-900" id="cartel" name="cartel" type="checkbox"/>
+</div>
+<div class="ml-3 text-sm leading-6 w-full">
+<div class="flex justify-between items-center w-full">
+<label class="font-medium text-slate-900 dark:text-white" for="cartel">Enable cartel detection analysis</label>
+<span class="inline-flex items-center rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10 dark:bg-indigo-900 dark:text-indigo-300">Beta</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 mt-1">Analyze bidding patterns across vendors to identify potential collusion risks.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Navigation Footer -->
+<div class="flex items-center justify-between pt-4 pb-12">
+<button class="px-6 py-3 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">arrow_back</span> Back
+                </button>
+<div class="flex gap-4">
+<button class="px-6 py-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                        Save Draft
+                    </button>
+<button class="px-8 py-3 rounded-lg bg-primary text-white font-semibold hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20 flex items-center gap-2">
+                        Next Step <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

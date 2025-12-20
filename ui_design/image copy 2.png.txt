@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>New Evaluation Wizard: Tender Upload</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#234e8b",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#13181f",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', "Noto Sans", sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col font-display text-[#101419] dark:text-gray-100">
+<header class="sticky top-0 z-50 bg-white dark:bg-[#1a202c] border-b border-[#e9ecf1] dark:border-gray-700 px-6 lg:px-10 py-3 shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded flex items-center justify-center bg-primary text-white">
+<span class="material-symbols-outlined text-[20px]">account_balance</span>
+</div>
+<h2 class="text-primary dark:text-blue-400 text-lg font-bold tracking-tight">GovProcure</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-[#576e8e] dark:text-gray-400 hover:text-primary dark:hover:text-blue-400 text-sm font-medium leading-normal transition-colors" href="#">Dashboard</a>
+<a class="text-primary font-semibold text-sm leading-normal border-b-2 border-primary py-1" href="#">Evaluations</a>
+<a class="text-[#576e8e] dark:text-gray-400 hover:text-primary dark:hover:text-blue-400 text-sm font-medium leading-normal transition-colors" href="#">Vendors</a>
+<a class="text-[#576e8e] dark:text-gray-400 hover:text-primary dark:hover:text-blue-400 text-sm font-medium leading-normal transition-colors" href="#">Reports</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end items-center gap-4 lg:gap-8">
+<div class="hidden md:flex relative w-full max-w-xs">
+<span class="absolute inset-y-0 left-0 flex items-center pl-3 text-[#576e8e]">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</span>
+<input class="w-full bg-[#f0f2f5] dark:bg-gray-800 border-none rounded py-2 pl-10 pr-4 text-sm text-[#101419] dark:text-white focus:ring-1 focus:ring-primary placeholder:text-[#576e8e]" placeholder="Search tenders, IDs..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<button class="relative flex items-center justify-center size-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition text-[#576e8e] dark:text-gray-400">
+<span class="material-symbols-outlined text-[24px]">notifications</span>
+</button>
+<div class="flex items-center gap-2 cursor-pointer p-1 rounded hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-8 border border-gray-200" data-alt="Profile picture of Officer Sharma" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAry1dPnLVHzfsGmUFxhEgjSyBI7qJKq-_fATnKLy7lZP-CmneV0i8HXhDZdD-OfCupgDjTBCL1GdVSMa35GfLJ8bxhjl1dCt9HlQREseQXedtCrYW8oGZCrgESp4V_1GjcTcmmmmDTAw865IL9yimfDgnxcw1C817X1dYRgeATxvMvPw7a-2Z1loqrY0KTA3ODqJK4yi7d26JbB9xwbMQwWttSeenvKtMOikzSX8fo83fRfBKaKHVrXL5-XNsDeUhUcDzW8tNaQug");'></div>
+<div class="hidden lg:flex flex-col">
+<span class="text-xs font-bold text-[#101419] dark:text-white">Officer Sharma</span>
+<span class="text-[10px] text-[#576e8e] dark:text-gray-400">Procurement Dept.</span>
+</div>
+<span class="material-symbols-outlined text-[#576e8e] text-[18px]">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-1 flex justify-center py-8 px-4 sm:px-8 lg:px-12">
+<div class="w-full max-w-4xl flex flex-col gap-8">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-2 text-sm text-[#576e8e] dark:text-gray-400 mb-2">
+<a class="hover:text-primary transition-colors" href="#">Evaluations</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-[#101419] dark:text-white font-medium">New Evaluation</span>
+</div>
+<h1 class="text-[#101419] dark:text-white text-3xl font-bold tracking-tight">New Bid Evaluation</h1>
+<div class="flex items-center w-full mt-4 mb-2">
+<div class="flex items-center relative w-full">
+<div class="flex flex-col items-center relative z-10 w-1/4">
+<div class="size-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shadow-sm ring-4 ring-white dark:ring-[#13181f]">1</div>
+<span class="text-sm font-bold text-primary mt-2">Upload</span>
+</div>
+<div class="absolute top-4 left-0 h-0.5 bg-gray-200 dark:bg-gray-700 w-full -z-0">
+<div class="h-full bg-primary w-[12.5%]"></div>
+</div>
+<div class="flex flex-col items-center relative z-10 w-1/4">
+<div class="size-8 rounded-full bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500 flex items-center justify-center font-bold text-sm shadow-sm ring-4 ring-white dark:ring-[#13181f]">2</div>
+<span class="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">Extract</span>
+</div>
+<div class="flex flex-col items-center relative z-10 w-1/4">
+<div class="size-8 rounded-full bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500 flex items-center justify-center font-bold text-sm shadow-sm ring-4 ring-white dark:ring-[#13181f]">3</div>
+<span class="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">Criteria</span>
+</div>
+<div class="flex flex-col items-center relative z-10 w-1/4">
+<div class="size-8 rounded-full bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500 flex items-center justify-center font-bold text-sm shadow-sm ring-4 ring-white dark:ring-[#13181f]">4</div>
+<span class="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">Review</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-gray-800 rounded border border-[#d3dae4] dark:border-gray-700 shadow-sm p-8">
+<h2 class="text-xl font-bold text-[#101419] dark:text-white mb-2">Step 1: Upload Tender</h2>
+<p class="text-[#576e8e] dark:text-gray-400 text-sm mb-6">Please upload the main tender document (RFP/RFQ) to initiate the evaluation process. The system will automatically extract key details.</p>
+<div class="border-2 border-dashed border-[#d3dae4] dark:border-gray-600 rounded-lg p-10 flex flex-col items-center justify-center text-center bg-gray-50 dark:bg-gray-800/50 hover:bg-blue-50 dark:hover:bg-blue-900/10 hover:border-primary/50 transition-colors cursor-pointer group mb-8 relative">
+<input accept=".pdf,.docx,.txt" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" type="file"/>
+<div class="bg-white dark:bg-gray-700 p-3 rounded-full shadow-sm mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-[32px]">cloud_upload</span>
+</div>
+<h3 class="text-[#101419] dark:text-white font-semibold mb-1">Click to upload or drag and drop</h3>
+<p class="text-[#576e8e] dark:text-gray-400 text-sm mb-4">PDF, DOCX or TXT (MAX. 50MB)</p>
+<button class="px-4 py-2 bg-white dark:bg-gray-700 border border-[#d3dae4] dark:border-gray-600 rounded text-sm font-medium text-[#101419] dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm">Browse Files</button>
+</div>
+<div class="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-lg p-4 mb-6 flex items-start gap-4">
+<div class="bg-white dark:bg-gray-800 p-2 rounded border border-gray-200 dark:border-gray-700 shrink-0">
+<span class="material-symbols-outlined text-red-500 text-[24px]">picture_as_pdf</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="text-sm font-bold text-[#101419] dark:text-white truncate">Tender_Document_Road_Construction_Ph1.pdf</h4>
+<p class="text-xs text-[#576e8e] dark:text-gray-400 mt-0.5">4.2 MB • Upload complete</p>
+</div>
+<button class="text-[#576e8e] hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+<div class="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
+<div class="bg-white/60 dark:bg-gray-800/60 p-2 rounded border border-blue-100 dark:border-blue-900/20">
+<p class="text-[10px] uppercase text-[#576e8e] dark:text-gray-400 font-bold mb-1">Tender ID</p>
+<p class="text-xs font-mono font-medium text-primary dark:text-blue-400">#2023-HW-11</p>
+</div>
+<div class="bg-white/60 dark:bg-gray-800/60 p-2 rounded border border-blue-100 dark:border-blue-900/20">
+<p class="text-[10px] uppercase text-[#576e8e] dark:text-gray-400 font-bold mb-1">Organization</p>
+<p class="text-xs font-medium text-[#101419] dark:text-white truncate">NHAI - North Zone</p>
+</div>
+<div class="bg-white/60 dark:bg-gray-800/60 p-2 rounded border border-blue-100 dark:border-blue-900/20">
+<p class="text-[10px] uppercase text-[#576e8e] dark:text-gray-400 font-bold mb-1">Category</p>
+<p class="text-xs font-medium text-[#101419] dark:text-white">Infrastructure</p>
+</div>
+</div>
+<div class="mt-2 text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                        Document analyzed successfully
+                    </div>
+</div>
+</div>
+<div class="flex justify-end mb-8">
+<button class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded font-bold text-sm shadow-sm transition-colors opacity-50 cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[20px]">upload</span>
+                    Upload Tender Document
+                </button>
+</div>
+<hr class="border-[#e9ecf1] dark:border-gray-700 mb-6"/>
+<div class="flex items-center justify-between">
+<button class="px-6 py-2.5 bg-white dark:bg-gray-700 border border-[#d3dae4] dark:border-gray-600 rounded font-bold text-sm text-[#576e8e] dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">Cancel</button>
+<button class="px-6 py-2.5 bg-primary hover:bg-primary/90 text-white rounded font-bold text-sm shadow-md transition-colors flex items-center gap-2">
+                    Next: Extract Details
+                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+
+</body></html>

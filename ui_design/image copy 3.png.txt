@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ProcureGov - Evaluation Wizard</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#234e8b",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#13181f",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem", 
+                        "lg": "0.25rem", 
+                        "xl": "0.5rem", 
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#101419] dark:text-gray-100 font-display min-h-screen flex flex-col overflow-x-hidden">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#e9ecf1] dark:border-gray-700 bg-white dark:bg-[#1a202c] px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<div class="size-8 text-primary">
+<svg class="w-full h-full" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_6_319)">
+<path d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z" fill="currentColor"></path>
+</g>
+<defs>
+<clippath id="clip0_6_319"><rect fill="white" height="48" width="48"></rect></clippath>
+</defs>
+</svg>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em] dark:text-white">ProcureGov - Evaluation Wizard</h2>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded-lg size-10 bg-[#e9ecf1] dark:bg-gray-700 text-[#101419] dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-lg size-10 bg-[#e9ecf1] dark:bg-gray-700 text-[#101419] dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border border-gray-200 dark:border-gray-600" data-alt="User profile avatar showing a professional abstract gradient" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuATZTb79shLHfUnr9r-PV7J2QYjubAqEnxAnd3SSwTCCUz_-k36bJujb8E-lbBN2DrTJQN6LBjpPvDqWJLAxgZIyxGQ-MjTViiq515of_shjIf9GeLjfXe4ChvS6LF0nvbprWTMaj0MjK1_PbTY4NBtFte00Vni8f8RAI6RlzgXLxKezgix11FINb6jpwIswleE_NqEMziViMRRtQom-VOIn_vNhDtfCHrqt0ph_-SsJxipEilp_YuhWxPeELGg_UlM0PuroF7n3K0");'></div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 w-full max-w-[1200px] mx-auto px-6 py-8 flex flex-col">
+<!-- Wizard Stepper -->
+<div class="w-full mb-10">
+<div class="flex items-center justify-between relative w-full max-w-[600px] mx-auto">
+<!-- Step 1 -->
+<div class="flex flex-col items-center gap-2 relative z-10">
+<div class="size-8 rounded-full bg-green-600 text-white flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+<span class="text-xs font-medium text-green-700 dark:text-green-500">Setup</span>
+</div>
+<!-- Connector 1-2 -->
+<div class="flex-1 h-[2px] bg-primary absolute left-0 top-4 w-1/2 -z-0"></div>
+<div class="flex-1 h-[2px] bg-gray-200 dark:bg-gray-700 absolute right-0 top-4 w-1/2 -z-0"></div>
+<!-- Step 2 (Active) -->
+<div class="flex flex-col items-center gap-2 relative z-10">
+<div class="size-8 rounded-full bg-primary text-white flex items-center justify-center font-bold ring-4 ring-blue-100 dark:ring-blue-900/30">
+                        2
+                    </div>
+<span class="text-xs font-bold text-primary dark:text-blue-400">Upload Bids</span>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center gap-2 relative z-10">
+<div class="size-8 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 flex items-center justify-center font-bold">
+                        3
+                    </div>
+<span class="text-xs font-medium text-gray-500 dark:text-gray-400">Review</span>
+</div>
+</div>
+</div>
+<!-- Page Header -->
+<div class="mb-8">
+<h1 class="text-3xl font-black leading-tight tracking-[-0.033em] text-[#101419] dark:text-white mb-2">Step 2: Upload Vendor Bids</h1>
+<p class="text-[#576e8e] dark:text-gray-400 text-base max-w-3xl">
+                Please upload the technical and financial bid documents for all participating vendors. The system will automatically scan and prepare them for evaluation. Supported formats: PDF, DOCX.
+            </p>
+</div>
+<!-- Upload Zone -->
+<div class="mb-10">
+<div class="flex flex-col items-center gap-6 rounded-lg border-2 border-dashed border-[#d3dae4] dark:border-gray-600 bg-white dark:bg-[#1a202c] px-6 py-12 hover:border-primary hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-all cursor-pointer group">
+<div class="rounded-full bg-blue-50 dark:bg-blue-900/20 p-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-4xl">cloud_upload</span>
+</div>
+<div class="flex max-w-[480px] flex-col items-center gap-1 text-center">
+<p class="text-[#101419] dark:text-white text-lg font-bold">Upload Documents</p>
+<p class="text-[#576e8e] dark:text-gray-400 text-sm">
+                        Drag &amp; drop files here or <span class="text-primary font-bold hover:underline">Browse</span> your computer
+                    </p>
+</div>
+</div>
+</div>
+<!-- Vendor Bids List Section -->
+<div class="flex flex-col gap-4">
+<!-- Section Header -->
+<div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+<div class="flex items-baseline gap-3">
+<h3 class="text-xl font-bold text-[#101419] dark:text-white">Uploaded Bids</h3>
+<span class="text-sm font-medium text-[#576e8e] dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">Total: 3</span>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-bold text-primary dark:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+<span class="material-symbols-outlined text-lg">add</span>
+                    Add More
+                </button>
+</div>
+<!-- Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+<!-- Card 1 -->
+<div class="bg-white dark:bg-[#1a202c] border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div class="size-10 rounded bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-red-600 dark:text-red-400">
+<span class="material-symbols-outlined">picture_as_pdf</span>
+</div>
+<div class="flex gap-1">
+<button class="text-gray-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20">
+<span class="material-symbols-outlined text-lg">delete</span>
+</button>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-[#101419] dark:text-white truncate" title="Vendor_1: TechPro_Bid_2023.pdf">Vendor_1: TechPro</h4>
+<p class="text-xs text-[#576e8e] dark:text-gray-400 mt-1">TechPro_Bid_2023.pdf • 2.4 MB</p>
+</div>
+<div class="mt-2 pt-3 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+<span class="size-1.5 rounded-full bg-green-600"></span> Ready
+                        </span>
+<span class="text-xs text-gray-400">Just now</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white dark:bg-[#1a202c] border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div class="size-10 rounded bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div class="flex gap-1">
+<button class="text-gray-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20">
+<span class="material-symbols-outlined text-lg">delete</span>
+</button>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-[#101419] dark:text-white truncate" title="Vendor_2: BudgetIT_Proposal.docx">Vendor_2: BudgetIT</h4>
+<p class="text-xs text-[#576e8e] dark:text-gray-400 mt-1">BudgetIT_Proposal.docx • 1.1 MB</p>
+</div>
+<div class="mt-2 pt-3 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+<span class="size-1.5 rounded-full bg-green-600"></span> Ready
+                        </span>
+<span class="text-xs text-gray-400">2 mins ago</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-white dark:bg-[#1a202c] border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div class="size-10 rounded bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-red-600 dark:text-red-400">
+<span class="material-symbols-outlined">picture_as_pdf</span>
+</div>
+<div class="flex gap-1">
+<button class="text-gray-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20">
+<span class="material-symbols-outlined text-lg">delete</span>
+</button>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-[#101419] dark:text-white truncate" title="Vendor_3: Premium_Solutions.pdf">Vendor_3: Premium</h4>
+<p class="text-xs text-[#576e8e] dark:text-gray-400 mt-1">Premium_Solutions.pdf • 4.5 MB</p>
+</div>
+<div class="mt-2 pt-3 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+<span class="size-1.5 rounded-full bg-green-600"></span> Ready
+                        </span>
+<span class="text-xs text-gray-400">5 mins ago</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Navigation -->
+<footer class="bg-white dark:bg-[#1a202c] border-t border-[#e9ecf1] dark:border-gray-700 px-10 py-5 sticky bottom-0 z-40">
+<div class="max-w-[1200px] mx-auto flex justify-between items-center">
+<button class="px-6 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-[#101419] dark:text-white font-bold text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                Back
+            </button>
+<div class="flex gap-4">
+<button class="px-2 py-2 text-sm font-medium text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-blue-400">
+                    Cancel Evaluation
+                </button>
+<button class="px-8 py-2.5 rounded-lg bg-primary text-white font-bold text-sm shadow-md hover:bg-[#1a3b6e] transition-colors flex items-center gap-2">
+                    Next Step
+                    <span class="material-symbols-outlined text-sm font-bold">arrow_forward</span>
+</button>
+</div>
+</div>
+</footer>
+</body></html>
