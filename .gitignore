@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads
+backend/uploads/
+uploads/
+
+# Logs
+*.log
+logs/
+
+# Environment variables (keep .env tracked, ignore local variants)
+.env.local
+.env.*.local
+
+# Node modules (frontend has its own .gitignore)
+node_modules/
+
+# Build outputs
+*.pyc
+*.pyo
+*.pyd
+
