@@ -4,6 +4,7 @@ Document Endpoints
 
 import os
 import aiofiles
+from pathlib import Path
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from fastapi.responses import FileResponse
@@ -37,23 +38,29 @@ async def upload_document(
     current_user: User = Depends(get_current_active_user),
 ):
     """Upload a document"""
-    # Validate file type
-    is_valid, error = validate_file_type(file.filename)
-    if not is_valid:
+    # Check if filename is provided
+    if not file.filename:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=error,
+            detail="Filename is required",
+        )
+    
+    # Validate file type
+    allowed_extensions = [f".{ext.strip()}" for ext in settings.ALLOWED_FILE_TYPES.split(",")]
+    if not validate_file_type(file.filename, allowed_extensions):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"File type not allowed. Allowed types: {settings.ALLOWED_FILE_TYPES}",
         )
 
     # Read file content
     content = await file.read()
 
     # Validate file size
-    is_valid, error = validate_file_size(len(content))
-    if not is_valid:
+    if not validate_file_size(len(content), settings.MAX_UPLOAD_SIZE):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=error,
+            detail=f"File size exceeds maximum allowed size of {settings.MAX_UPLOAD_SIZE} bytes",
         )
 
     # Generate file hash
@@ -63,22 +70,25 @@ async def upload_document(
     safe_filename = sanitize_filename(file.filename)
 
     # Create storage path
-    ensure_directory_exists(settings.UPLOAD_DIR)
-    file_path = os.path.join(settings.UPLOAD_DIR, f"{file_hash}_{safe_filename}")
+    upload_dir = Path(settings.UPLOAD_DIR)
+    ensure_directory_exists(upload_dir)
+    file_path = upload_dir / f"{file_hash}_{safe_filename}"
 
     # Save file
-    async with aiofiles.open(file_path, "wb") as f:
+    file_path_str = str(file_path)
+    async with aiofiles.open(file_path_str, "wb") as f:
         await f.write(content)
 
     # Create document record
     document = Document(
         filename=safe_filename,
-        file_path=file_path,
+        original_filename=file.filename,  # Store original filename
+        file_path=file_path_str,
         file_type=file_type,
         file_size=len(content),
         mime_type=detect_mime_type(safe_filename),
         file_hash=file_hash,
-        uploaded_by=current_user.id,
+        uploaded_by_id=current_user.id,
     )
 
     db.add(document)
