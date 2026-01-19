@@ -42,7 +42,8 @@ class Settings(BaseSettings):
     AWS_REGION: str = "us-east-1"
     AWS_ACCESS_KEY_ID: str = ""
     AWS_SECRET_ACCESS_KEY: str = ""
-    BEDROCK_MODEL_ID: str = "anthropic.claude-sonnet-4-20250514-v1:0"
+    # Using Claude 3.5 Sonnet which supports on-demand throughput
+    BEDROCK_MODEL_ID: str = "anthropic.claude-3-5-sonnet-20241022-v2:0"
     LLM_TEMPERATURE: float = 0.2
     LLM_TIMEOUT: int = 120
 

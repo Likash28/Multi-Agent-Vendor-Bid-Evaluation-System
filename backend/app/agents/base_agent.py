@@ -5,7 +5,7 @@ import json
 import logging
 from typing import Dict, Any, Optional
 from langchain_aws import ChatBedrock
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import HumanMessage, SystemMessage
 
 
@@ -136,23 +136,37 @@ class BaseAgent:
             Exception: If LLM invocation fails
         """
         try:
+            logger.info(f"{self.agent_name}: Starting LLM invoke call with model {self.model_id}")
             logger.debug(f"{self.agent_name}: Invoking LLM...")
+            logger.debug(f"{self.agent_name}: Number of messages: {len(messages)}")
+
+            # Log message preview
+            if messages:
+                first_msg = str(messages[0])[:200] if len(str(messages[0])) > 200 else str(messages[0])
+                logger.debug(f"{self.agent_name}: First message preview: {first_msg}...")
 
             # Invoke LLM
+            logger.info(f"{self.agent_name}: Calling llm.ainvoke() method now...")
             response = await self.llm.ainvoke(messages)
+            logger.info(f"{self.agent_name}: LLM invoke call completed successfully")
 
             # Extract content
             content = response.content if hasattr(response, 'content') else str(response)
 
-            logger.debug(f"{self.agent_name}: Received response ({len(content)} chars)")
+            logger.info(f"{self.agent_name}: Received LLM response ({len(content)} chars)")
+            logger.debug(f"{self.agent_name}: Response preview: {content[:200]}..." if len(content) > 200 else f"{self.agent_name}: Response: {content}")
 
             if parse_json:
-                return self._parse_json_response(content)
+                logger.debug(f"{self.agent_name}: Parsing response as JSON...")
+                result = self._parse_json_response(content)
+                logger.debug(f"{self.agent_name}: JSON parsing completed")
+                return result
             else:
                 return {"raw_response": content}
 
         except Exception as e:
             logger.error(f"{self.agent_name}: LLM invocation failed: {str(e)}")
+            logger.error(f"{self.agent_name}: LLM invoke call encountered an error")
             raise
 
     def _parse_json_response(self, response_text: str) -> Dict[str, Any]:

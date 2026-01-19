@@ -1,5 +1,5 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-import { getToken, setToken, removeToken } from "./auth";
+import { getToken, setToken, removeToken, getRefreshToken, removeRefreshToken } from "./auth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -38,7 +38,7 @@ api.interceptors.response.use(
 
       try {
         // Try to refresh the token
-        const refreshToken = localStorage.getItem("refreshToken");
+        const refreshToken = getRefreshToken();
         if (refreshToken) {
           const response = await axios.post(`${API_URL}/api/v1/auth/refresh`, {
             refresh_token: refreshToken,
@@ -56,7 +56,7 @@ api.interceptors.response.use(
       } catch (refreshError) {
         // Refresh failed, clear tokens and redirect to login
         removeToken();
-        localStorage.removeItem("refreshToken");
+        removeRefreshToken();
 
         if (typeof window !== "undefined") {
           window.location.href = "/login";

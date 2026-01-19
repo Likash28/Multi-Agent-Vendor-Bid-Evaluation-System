@@ -7,6 +7,7 @@ from typing import Dict, Any, Optional
 from pathlib import Path
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException, status, UploadFile
+import logging
 
 from app.models.document import Document
 from app.repositories.document_repository import document_repository
@@ -20,6 +21,9 @@ from app.utils.file_utils import (
 from app.utils.pdf_parser import PDFParser
 from app.utils.docx_parser import DocxParser
 from app.config import settings
+from app.utils.logger import get_logger, log_document_event, log_error
+
+logger = get_logger(__name__)
 
 
 class DocumentService:
@@ -31,7 +35,7 @@ class DocumentService:
         self.docx_parser = DocxParser()
         self.upload_dir = Path(settings.UPLOAD_DIR)
         self.allowed_types = ['.pdf', '.docx', '.doc']
-        self.max_size = settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024  # Convert to bytes
+        self.max_size = settings.MAX_UPLOAD_SIZE  # Already in bytes
 
     async def upload_document(
         self,
@@ -68,9 +72,10 @@ class DocumentService:
         file.file.seek(0)  # Reset to beginning
 
         if file_size > self.max_size:
+            max_size_mb = self.max_size / (1024 * 1024)  # Convert bytes to MB
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"File too large. Maximum size: {settings.MAX_UPLOAD_SIZE_MB}MB"
+                detail=f"File too large. Maximum size: {max_size_mb:.0f}MB"
             )
 
         # Ensure upload directory exists
@@ -202,58 +207,83 @@ class DocumentService:
         Raises:
             HTTPException: If document not found or processing fails
         """
-        document = await self.get_document(db, doc_id)
-        file_path = Path(document.file_path)
-
-        if not file_path.exists():
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Document file not found on disk"
-            )
-
-        # Extract content based on file type
+        logger.info(f"Processing document: {doc_id}")
+        log_document_event(logger, "processing_started", doc_id)
+        
         try:
-            file_ext = file_path.suffix.lower()
+            document = await self.get_document(db, doc_id)
+            file_path = Path(document.file_path)
 
-            if file_ext == '.pdf':
-                content = self.pdf_parser.parse_document(file_path)
-            elif file_ext in ['.docx', '.doc']:
-                content = self.docx_parser.parse_document(file_path)
-            else:
+            if not file_path.exists():
+                logger.error(f"Document file not found: {file_path} for document {doc_id}")
                 raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Unsupported file type: {file_ext}"
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Document file not found on disk"
                 )
 
-            # Prepare extracted data
-            extracted_data = {
-                "text_length": len(content.text),
-                "table_count": len(content.tables),
-                "page_count": content.page_count,
-                "metadata": content.metadata,
-            }
+            logger.debug(f"Extracting content from {document.filename} (type: {document.file_type})")
+            
+            # Extract content based on file type
+            try:
+                file_ext = file_path.suffix.lower()
 
-            # Update document with extracted content
-            update_data = {
-                "extracted_text": content.text,
-                "extracted_data": extracted_data,
-            }
+                if file_ext == '.pdf':
+                    logger.debug(f"Parsing PDF: {file_path}")
+                    content = self.pdf_parser.parse_document(file_path)
+                elif file_ext in ['.docx', '.doc']:
+                    logger.debug(f"Parsing DOCX: {file_path}")
+                    content = self.docx_parser.parse_document(file_path)
+                else:
+                    logger.warning(f"Unsupported file type: {file_ext} for document {doc_id}")
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Unsupported file type: {file_ext}"
+                    )
 
-            await self.doc_repo.update(db, document, update_data)
+                logger.info(f"Document parsed successfully: {doc_id}, text length: {len(content.text)}, pages: {content.page_count}")
 
-            return {
-                "document_id": doc_id,
-                "text": content.text,
-                "tables": content.tables,
-                "metadata": content.metadata,
-                "extracted_data": extracted_data,
-            }
+                # Prepare extracted data - store text in the JSON field
+                extracted_data = {
+                    "text": content.text,  # Store the actual text content
+                    "text_length": len(content.text),
+                    "table_count": len(content.tables),
+                    "page_count": content.page_count,
+                    "metadata": content.metadata,
+                }
 
+                # Update document with extracted content
+                update_data = {
+                    "extracted_data": extracted_data,
+                }
+
+                await self.doc_repo.update(db, document, update_data)
+                
+                logger.info(f"Document processing completed: {doc_id}")
+                log_document_event(logger, "processing_completed", doc_id, 
+                                  text_length=len(content.text), page_count=content.page_count)
+
+                return {
+                    "document_id": doc_id,
+                    "text": content.text,
+                    "tables": content.tables,
+                    "metadata": content.metadata,
+                    "extracted_data": extracted_data,
+                }
+
+            except HTTPException:
+                raise
+            except Exception as e:
+                log_error(logger, e, f"Document processing - {doc_id}")
+                log_document_event(logger, "processing_failed", doc_id, error=str(e))
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"Failed to process document: {str(e)}"
+                )
+        except HTTPException:
+            raise
         except Exception as e:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Failed to process document: {str(e)}"
-            )
+            log_error(logger, e, f"Document processing - {doc_id}")
+            raise
 
 
 # Singleton instance

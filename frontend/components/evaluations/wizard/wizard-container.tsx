@@ -13,6 +13,7 @@ export interface WizardData {
   title: string
   description: string
   tenderDocument?: File
+  tenderDocumentId?: string // Document ID from API
 
   // Step 2: Configuration
   evaluationMethod: "L1" | "QCBS" | "TWO_STAGE"
@@ -29,10 +30,12 @@ export interface WizardData {
   // Step 4: Vendors
   vendors: Array<{
     id: string
+    vendorId?: string // Vendor ID from API (after creation)
     name: string
     gstin: string
     contact: string
     bidDocument?: File
+    bidDocumentId?: string // Document ID from API
   }>
 }
 
@@ -146,6 +149,28 @@ export function WizardContainer({ children }: WizardContainerProps) {
             toast({
               title: "Validation Error",
               description: "Please add at least one vendor",
+              variant: "destructive",
+            })
+            return false
+          }
+          // Check that all vendors have vendor IDs (created in backend)
+          const vendorsWithoutIds = data.vendors.filter((v) => !v.vendorId)
+          if (vendorsWithoutIds.length > 0) {
+            toast({
+              title: "Validation Error",
+              description: `Please wait for vendors to be created. Missing: ${vendorsWithoutIds.map((v) => v.name).join(", ")}`,
+              variant: "destructive",
+            })
+            return false
+          }
+          // Check that all vendors have bid documents uploaded
+          const vendorsWithoutBids = data.vendors.filter(
+            (v) => !v.bidDocumentId
+          )
+          if (vendorsWithoutBids.length > 0) {
+            toast({
+              title: "Validation Error",
+              description: `Please upload bid documents for all vendors. Missing: ${vendorsWithoutBids.map((v) => v.name).join(", ")}`,
               variant: "destructive",
             })
             return false

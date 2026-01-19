@@ -6,6 +6,7 @@ Main application with CORS, middleware, and lifespan management
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import logging
 
 from app.config import settings
 from app.dependencies import init_db, close_db
@@ -13,6 +14,11 @@ from app.core.middleware import SecurityHeadersMiddleware
 from app.core.exceptions import setup_exception_handlers
 from app.api.v1.router import api_router
 from app.api.websocket import websocket_router
+from app.utils.logger import setup_logging, get_logger
+
+# Setup logging first
+setup_logging()
+logger = get_logger(__name__)
 
 
 @asynccontextmanager
@@ -22,16 +28,30 @@ async def lifespan(app: FastAPI):
     Handles startup and shutdown events.
     """
     # Startup
-    print(f"Starting {settings.APP_NAME}...")
-    await init_db()
-    print("Database initialized")
+    logger.info(f"Starting {settings.APP_NAME}...")
+    logger.info(f"Environment: {settings.APP_ENV}")
+    logger.info(f"Debug mode: {settings.DEBUG}")
+    logger.info(f"Log level: {settings.LOG_LEVEL}")
+    
+    try:
+        await init_db()
+        logger.info("Database initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize database: {e}", exc_info=True)
+        raise
 
+    logger.info(f"{settings.APP_NAME} started successfully")
     yield
 
     # Shutdown
-    print("Shutting down...")
-    await close_db()
-    print("Database connections closed")
+    logger.info("Shutting down...")
+    try:
+        await close_db()
+        logger.info("Database connections closed")
+    except Exception as e:
+        logger.error(f"Error closing database connections: {e}", exc_info=True)
+    
+    logger.info(f"{settings.APP_NAME} shutdown complete")
 
 
 # Create FastAPI application

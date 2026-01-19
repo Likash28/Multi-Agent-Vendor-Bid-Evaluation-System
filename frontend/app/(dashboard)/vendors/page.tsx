@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Vendor } from '@/types/vendor';
+import { Vendor, searchVendors } from '@/lib/vendor-api';
 import {
   Table,
   TableBody,
@@ -12,25 +12,25 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getStatusColor, formatDate } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
 import { Search, Plus, CheckCircle, XCircle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 export default function VendorsPage() {
   const router = useRouter();
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     const fetchVendors = async () => {
       try {
-        const response = await fetch('/api/vendors');
-        if (response.ok) {
-          const data = await response.json();
-          setVendors(data);
-        }
+        setIsLoading(true);
+        const response = await searchVendors(searchQuery || undefined, undefined, 1, 100);
+        setVendors(response.items);
+        setTotal(response.total);
       } catch (error) {
         console.error('Failed to fetch vendors:', error);
       } finally {
@@ -39,13 +39,14 @@ export default function VendorsPage() {
     };
 
     fetchVendors();
-  }, []);
+  }, [searchQuery]);
 
   const filteredVendors = vendors.filter(
     (vendor) =>
       vendor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      vendor.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      vendor.registration_number?.toLowerCase().includes(searchQuery.toLowerCase())
+      vendor.contact_email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      vendor.registration_no?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      vendor.gstin?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (isLoading) {
@@ -72,37 +73,27 @@ export default function VendorsPage() {
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
+          <Input
             type="text"
             placeholder="Search vendors..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+            className="pl-10"
           />
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <StatCard
           label="Total Vendors"
-          value={vendors.length.toString()}
+          value={total.toString()}
           color="blue"
         />
         <StatCard
-          label="Active"
-          value={vendors.filter((v) => v.status === 'ACTIVE').length.toString()}
-          color="green"
-        />
-        <StatCard
           label="Verified"
-          value={vendors.filter((v) => v.verified).length.toString()}
+          value={vendors.filter((v) => v.is_verified).length.toString()}
           color="purple"
-        />
-        <StatCard
-          label="Suspended"
-          value={vendors.filter((v) => v.status === 'SUSPENDED').length.toString()}
-          color="red"
         />
       </div>
 
@@ -112,9 +103,9 @@ export default function VendorsPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
+              <TableHead>GSTIN</TableHead>
               <TableHead>Registration No.</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Contact</TableHead>
               <TableHead>Verified</TableHead>
               <TableHead>Created</TableHead>
               <TableHead className="w-24">Actions</TableHead>
@@ -124,29 +115,31 @@ export default function VendorsPage() {
             {filteredVendors.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                  No vendors found
+                  {isLoading ? 'Loading...' : 'No vendors found'}
                 </TableCell>
               </TableRow>
             ) : (
               filteredVendors.map((vendor) => (
                 <TableRow key={vendor.id}>
                   <TableCell className="font-medium">{vendor.name}</TableCell>
-                  <TableCell>{vendor.email}</TableCell>
                   <TableCell>
                     <span className="font-mono text-sm">
-                      {vendor.registration_number || '-'}
+                      {vendor.gstin || '-'}
                     </span>
                   </TableCell>
                   <TableCell>
-                    <Badge className={getStatusColor(vendor.status)}>
-                      {vendor.status}
-                    </Badge>
+                    <span className="font-mono text-sm">
+                      {vendor.registration_no || '-'}
+                    </span>
                   </TableCell>
                   <TableCell>
-                    {vendor.verified ? (
+                    {vendor.contact_email || vendor.contact_phone || '-'}
+                  </TableCell>
+                  <TableCell>
+                    {vendor.is_verified ? (
                       <CheckCircle className="h-5 w-5 text-green-600" />
                     ) : (
-                      <XCircle className="h-5 w-5 text-red-600" />
+                      <XCircle className="h-5 w-5 text-gray-400" />
                     )}
                   </TableCell>
                   <TableCell>{formatDate(vendor.created_at)}</TableCell>

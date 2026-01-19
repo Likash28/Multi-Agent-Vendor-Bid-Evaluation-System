@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -19,6 +19,9 @@ import {
 } from "lucide-react"
 import { WizardData } from "../wizard-container"
 import { useToast } from "@/hooks/use-toast"
+import { createOrGetVendor, searchVendors, type Vendor } from "@/lib/vendor-api"
+import { uploadDocument } from "@/lib/evaluation-api"
+import { Loader2 } from "lucide-react"
 
 const vendorSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -42,6 +45,12 @@ export function VendorsStep({ data, updateData }: VendorsStepProps) {
   const { toast } = useToast()
   const [showAddForm, setShowAddForm] = useState(data.vendors.length === 0)
   const [editingVendorId, setEditingVendorId] = useState<string | null>(null)
+  const [uploadingVendors, setUploadingVendors] = useState<Set<string>>(new Set())
+  const [uploadingDocuments, setUploadingDocuments] = useState<Set<string>>(new Set())
+  const [searchQuery, setSearchQuery] = useState("")
+  const [searchResults, setSearchResults] = useState<Vendor[]>([])
+  const [isSearching, setIsSearching] = useState(false)
+  const [showSearchResults, setShowSearchResults] = useState(false)
 
   const {
     register,
@@ -52,22 +61,64 @@ export function VendorsStep({ data, updateData }: VendorsStepProps) {
     resolver: zodResolver(vendorSchema),
   })
 
-  const onAddVendor = (formData: VendorFormData) => {
+  const onAddVendor = async (formData: VendorFormData) => {
+    const tempId = `vendor-${Date.now()}-${Math.random()}`
     const newVendor = {
-      id: `vendor-${Date.now()}-${Math.random()}`,
+      id: tempId,
       name: formData.name,
       gstin: formData.gstin,
       contact: formData.contact,
     }
 
+    // Add vendor to list immediately (optimistic update)
     updateData({ vendors: [...data.vendors, newVendor] })
-    reset()
-    setShowAddForm(false)
+    setUploadingVendors((prev) => new Set(prev).add(tempId))
 
-    toast({
-      title: "Vendor added",
-      description: `${formData.name} has been added to the evaluation`,
-    })
+    try {
+      // Extract email or phone from contact
+      const isEmail = formData.contact.includes("@")
+      const vendorData = {
+        name: formData.name,
+        gstin: formData.gstin,
+        contact_email: isEmail ? formData.contact : undefined,
+        contact_phone: !isEmail ? formData.contact : undefined,
+      }
+
+      // Create or get vendor from backend
+      const vendor = await createOrGetVendor(vendorData)
+
+      // Update vendor with API ID
+      updateData({
+        vendors: data.vendors.map((v) =>
+          v.id === tempId ? { ...v, vendorId: vendor.id } : v
+        ),
+      })
+
+      reset()
+      setShowAddForm(false)
+
+      toast({
+        title: "Vendor added",
+        description: `${formData.name} has been added to the evaluation`,
+      })
+    } catch (error: any) {
+      // Remove vendor on error
+      updateData({
+        vendors: data.vendors.filter((v) => v.id !== tempId),
+      })
+
+      toast({
+        title: "Failed to add vendor",
+        description: error.message || "Could not create vendor",
+        variant: "destructive",
+      })
+    } finally {
+      setUploadingVendors((prev) => {
+        const next = new Set(prev)
+        next.delete(tempId)
+        return next
+      })
+    }
   }
 
   const handleRemoveVendor = (vendorId: string) => {
@@ -80,24 +131,85 @@ export function VendorsStep({ data, updateData }: VendorsStepProps) {
     })
   }
 
-  const handleBidDocumentUpload = (
+  const handleBidDocumentUpload = async (
     vendorId: string,
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = e.target.files?.[0]
     if (!file) return
 
+    // Validate file type
+    const validTypes = [".pdf", ".docx"]
+    const fileExt = `.${file.name.split(".").pop()?.toLowerCase()}`
+    if (!validTypes.includes(fileExt)) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a PDF or DOCX file",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Validate file size (50MB max)
+    const maxSize = 50 * 1024 * 1024
+    if (file.size > maxSize) {
+      toast({
+        title: "File too large",
+        description: "File size must be less than 50MB",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Update vendor with file (optimistic update)
     updateData({
       vendors: data.vendors.map((v) =>
         v.id === vendorId ? { ...v, bidDocument: file } : v
       ),
     })
 
-    const vendor = data.vendors.find((v) => v.id === vendorId)
-    toast({
-      title: "Bid document uploaded",
-      description: `${file.name} uploaded for ${vendor?.name}`,
-    })
+    setUploadingDocuments((prev) => new Set(prev).add(vendorId))
+
+    try {
+      // Upload document to backend
+      const response = await uploadDocument(file, "bid", {
+        vendor_id: data.vendors.find((v) => v.id === vendorId)?.vendorId,
+      })
+
+      // Update vendor with document ID
+      updateData({
+        vendors: data.vendors.map((v) =>
+          v.id === vendorId
+            ? { ...v, bidDocument: file, bidDocumentId: response.id }
+            : v
+        ),
+      })
+
+      const vendor = data.vendors.find((v) => v.id === vendorId)
+      toast({
+        title: "Bid document uploaded",
+        description: `${file.name} uploaded for ${vendor?.name}`,
+      })
+    } catch (error: any) {
+      // Remove file on error
+      updateData({
+        vendors: data.vendors.map((v) =>
+          v.id === vendorId ? { ...v, bidDocument: undefined } : v
+        ),
+      })
+
+      toast({
+        title: "Upload failed",
+        description: error.message || "Failed to upload document",
+        variant: "destructive",
+      })
+    } finally {
+      setUploadingDocuments((prev) => {
+        const next = new Set(prev)
+        next.delete(vendorId)
+        return next
+      })
+    }
   }
 
   const handleRemoveBidDocument = (vendorId: string) => {
@@ -105,6 +217,81 @@ export function VendorsStep({ data, updateData }: VendorsStepProps) {
       vendors: data.vendors.map((v) =>
         v.id === vendorId ? { ...v, bidDocument: undefined } : v
       ),
+    })
+  }
+
+  // Search vendors
+  const handleSearchVendors = async (query: string) => {
+    if (!query || query.trim().length < 2) {
+      setSearchResults([])
+      setShowSearchResults(false)
+      return
+    }
+
+    setIsSearching(true)
+    setShowSearchResults(true)
+
+    try {
+      const response = await searchVendors(query.trim())
+      // Filter out vendors that are already added
+      const existingVendorIds = new Set(
+        data.vendors.map((v) => v.vendorId).filter(Boolean)
+      )
+      const filteredResults = response.items.filter(
+        (v) => !existingVendorIds.has(v.id)
+      )
+      setSearchResults(filteredResults)
+    } catch (error: any) {
+      toast({
+        title: "Search failed",
+        description: error.message || "Could not search vendors",
+        variant: "destructive",
+      })
+      setSearchResults([])
+    } finally {
+      setIsSearching(false)
+    }
+  }
+
+  // Handle search input change with debounce
+  useEffect(() => {
+    if (!searchQuery || searchQuery.trim().length < 2) {
+      setSearchResults([])
+      setShowSearchResults(false)
+      return
+    }
+
+    const timer = setTimeout(() => {
+      handleSearchVendors(searchQuery)
+    }, 300)
+
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery])
+
+  // Add existing vendor from search results
+  const handleAddExistingVendor = async (vendor: Vendor) => {
+    const tempId = `vendor-${Date.now()}-${Math.random()}`
+    const contact = vendor.contact_email || vendor.contact_phone || ""
+    
+    const newVendor = {
+      id: tempId,
+      vendorId: vendor.id,
+      name: vendor.name,
+      gstin: vendor.gstin || "",
+      contact: contact,
+    }
+
+    // Add vendor to list immediately
+    updateData({ vendors: [...data.vendors, newVendor] })
+
+    setSearchQuery("")
+    setSearchResults([])
+    setShowSearchResults(false)
+
+    toast({
+      title: "Vendor added",
+      description: `${vendor.name} has been added to the evaluation`,
     })
   }
 
@@ -170,16 +357,30 @@ export function VendorsStep({ data, updateData }: VendorsStepProps) {
                           onChange={(e) =>
                             handleBidDocumentUpload(vendor.id, e)
                           }
+                          disabled={uploadingDocuments.has(vendor.id)}
                           className="sr-only"
                         />
                         <label
                           htmlFor={`bid-${vendor.id}`}
-                          className="flex items-center gap-2 px-3 py-2 text-sm border border-dashed rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                          className={`flex items-center gap-2 px-3 py-2 text-sm border border-dashed rounded-lg transition-colors ${
+                            uploadingDocuments.has(vendor.id)
+                              ? "cursor-not-allowed opacity-50"
+                              : "cursor-pointer hover:bg-gray-50"
+                          }`}
                         >
-                          <Upload className="w-4 h-4 text-gray-400" />
-                          <span className="text-gray-600">
-                            Upload bid document
-                          </span>
+                          {uploadingDocuments.has(vendor.id) ? (
+                            <>
+                              <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
+                              <span className="text-gray-600">Uploading...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-4 h-4 text-gray-400" />
+                              <span className="text-gray-600">
+                                Upload bid document
+                              </span>
+                            </>
+                          )}
                         </label>
                       </div>
                     ) : (
@@ -286,9 +487,22 @@ export function VendorsStep({ data, updateData }: VendorsStepProps) {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Vendor
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={uploadingVendors.size > 0}
+              >
+                {uploadingVendors.size > 0 ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Vendor
+                  </>
+                )}
               </Button>
             </form>
           </Card>
@@ -304,14 +518,77 @@ export function VendorsStep({ data, updateData }: VendorsStepProps) {
           </Button>
         )}
 
-        {/* Search Existing Vendors - Placeholder */}
+        {/* Search Existing Vendors */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
-            placeholder="Search existing vendors (coming soon)"
-            disabled
+            placeholder="Search existing vendors..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => {
+              if (searchResults.length > 0 && searchQuery.length >= 2) {
+                setShowSearchResults(true)
+              }
+            }}
+            onBlur={() => {
+              // Delay hiding to allow click on results
+              setTimeout(() => setShowSearchResults(false), 200)
+            }}
             className="pl-9"
           />
+          {isSearching && (
+            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 animate-spin" />
+          )}
+
+          {/* Search Results Dropdown */}
+          {showSearchResults && searchResults.length > 0 && (
+            <Card className="absolute z-10 w-full mt-1 max-h-60 overflow-y-auto shadow-lg">
+              <div className="p-2 space-y-1">
+                {searchResults.map((vendor) => (
+                  <button
+                    key={vendor.id}
+                    type="button"
+                    onMouseDown={(e) => {
+                      // Prevent onBlur from firing before onClick
+                      e.preventDefault()
+                    }}
+                    onClick={() => handleAddExistingVendor(vendor)}
+                    className="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Building2 className="w-4 h-4 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">
+                          {vendor.name}
+                        </p>
+                        {vendor.gstin && (
+                          <p className="text-xs text-gray-600">
+                            GSTIN: {vendor.gstin}
+                          </p>
+                        )}
+                        {(vendor.contact_email || vendor.contact_phone) && (
+                          <p className="text-xs text-gray-600">
+                            {vendor.contact_email || vendor.contact_phone}
+                          </p>
+                        )}
+                      </div>
+                      <Plus className="w-4 h-4 text-primary flex-shrink-0 mt-1" />
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </Card>
+          )}
+
+          {showSearchResults && searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && (
+            <Card className="absolute z-10 w-full mt-1 shadow-lg">
+              <div className="p-4 text-center text-sm text-gray-500">
+                No vendors found matching "{searchQuery}"
+              </div>
+            </Card>
+          )}
         </div>
 
         {/* Info */}

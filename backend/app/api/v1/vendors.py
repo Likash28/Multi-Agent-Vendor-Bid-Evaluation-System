@@ -13,8 +13,21 @@ from app.models.user import User
 from app.models.vendor import Vendor
 from app.models.bid import Bid
 from app.schemas.vendor import VendorResponse, VendorListResponse
+from app.services.vendor_service import vendor_service
+from pydantic import BaseModel
+from typing import Optional
 
 router = APIRouter()
+
+
+class VendorCreate(BaseModel):
+    """Schema for creating a vendor"""
+    name: str
+    gstin: Optional[str] = None
+    registration_no: Optional[str] = None
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    address: Optional[str] = None
 
 
 @router.get("", response_model=VendorListResponse)
@@ -81,6 +94,23 @@ async def get_vendor(
             detail="Vendor not found",
         )
 
+    return vendor
+
+
+@router.post("", response_model=VendorResponse, status_code=status.HTTP_201_CREATED)
+async def create_vendor(
+    vendor_data: VendorCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    """Create or get existing vendor (get_or_create pattern)"""
+    vendor = await vendor_service.get_or_create_vendor(
+        db,
+        vendor_data.model_dump()
+    )
+    # Commit transaction to ensure vendor is saved
+    await db.commit()
+    await db.refresh(vendor)
     return vendor
 
 

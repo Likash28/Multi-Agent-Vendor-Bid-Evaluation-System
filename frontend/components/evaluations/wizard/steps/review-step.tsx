@@ -17,6 +17,12 @@ import {
 } from "lucide-react"
 import { WizardData } from "../wizard-container"
 import { useToast } from "@/hooks/use-toast"
+import {
+  createEvaluation,
+  addBidsToEvaluation,
+  updateEvaluationConfig,
+  startEvaluation,
+} from "@/lib/evaluation-api"
 
 interface ReviewStepProps {
   data: WizardData
@@ -59,23 +65,80 @@ export function ReviewStep({ data, goToStep }: ReviewStepProps) {
     setIsSubmitting(true)
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      // Validate required data
+      if (!data.title || data.title.length < 10) {
+        throw new Error("Please provide a valid evaluation title (min 10 characters)")
+      }
+
+      if (data.vendors.length === 0) {
+        throw new Error("Please add at least one vendor")
+      }
+
+      // Validate all vendors have bid documents uploaded
+      const vendorsWithoutBids = data.vendors.filter(
+        (v) => !v.bidDocumentId
+      )
+      if (vendorsWithoutBids.length > 0) {
+        throw new Error(
+          `Please upload bid documents for: ${vendorsWithoutBids.map((v) => v.name).join(", ")}`
+        )
+      }
+
+      // Validate all vendors have vendor IDs
+      const vendorsWithoutIds = data.vendors.filter((v) => !v.vendorId)
+      if (vendorsWithoutIds.length > 0) {
+        throw new Error(
+          `Vendors not properly created: ${vendorsWithoutIds.map((v) => v.name).join(", ")}`
+        )
+      }
+
+      // Map evaluation method to backend format
+      const methodMap: Record<string, "l1" | "qcbs" | "two_stage"> = {
+        L1: "l1",
+        QCBS: "qcbs",
+        TWO_STAGE: "two_stage",
+      }
+
+      // Step 1: Create evaluation
+      const evaluation = await createEvaluation({
+        title: data.title,
+        tender_document_id: data.tenderDocumentId || undefined,
+        config: {
+          method: methodMap[data.evaluationMethod] || "qcbs",
+          technical_weight: data.technicalWeight,
+          financial_weight: data.financialWeight,
+          qualification_threshold: data.qualificationThreshold,
+          enable_compliance_check: data.enableComplianceCheck,
+          enable_justifications: data.enableAIJustifications,
+          enable_cartel_detection: data.enableCartelDetection,
+        },
+      })
+
+      // Step 2: Add bids to evaluation
+      const bids = data.vendors.map((vendor) => ({
+        vendor_id: vendor.vendorId!,
+        document_id: vendor.bidDocumentId,
+      }))
+
+      await addBidsToEvaluation(evaluation.id, bids)
+
+      // Step 3: Start evaluation
+      const startResult = await startEvaluation(evaluation.id)
 
       // Clear wizard data from localStorage
       localStorage.removeItem("govprocure-evaluation-wizard")
 
       toast({
         title: "Evaluation Created",
-        description: "Your evaluation has been submitted successfully",
+        description: "Your evaluation has been submitted and started successfully",
       })
 
       // Redirect to processing page
-      router.push("/evaluations/123/processing")
-    } catch (error) {
+      router.push(`/evaluations/${evaluation.id}/processing`)
+    } catch (error: any) {
       toast({
         title: "Submission Failed",
-        description: "There was an error creating the evaluation",
+        description: error.message || "There was an error creating the evaluation",
         variant: "destructive",
       })
       setIsSubmitting(false)

@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Upload, FileText, X } from "lucide-react"
+import { Upload, FileText, X, Loader2 } from "lucide-react"
 import { WizardData } from "../wizard-container"
 import { useState } from "react"
+import { uploadDocument } from "@/lib/evaluation-api"
+import { useToast } from "@/hooks/use-toast"
 
 const schema = z.object({
   title: z.string().min(10, "Title must be at least 10 characters"),
@@ -24,9 +26,14 @@ interface BasicInfoStepProps {
 }
 
 export function BasicInfoStep({ data, updateData }: BasicInfoStepProps) {
+  const { toast } = useToast()
   const [tenderFile, setTenderFile] = useState<File | undefined>(
     data.tenderDocument
   )
+  const [tenderDocumentId, setTenderDocumentId] = useState<string | undefined>(
+    data.tenderDocumentId
+  )
+  const [isUploading, setIsUploading] = useState(false)
 
   const {
     register,
@@ -54,17 +61,67 @@ export function BasicInfoStep({ data, updateData }: BasicInfoStepProps) {
     updateData({ description: value })
   }
 
-  const handleTenderFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTenderFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0]
-    if (file) {
-      setTenderFile(file)
-      updateData({ tenderDocument: file })
+    if (!file) return
+
+    // Validate file type
+    const validTypes = [".pdf", ".docx"]
+    const fileExt = `.${file.name.split(".").pop()?.toLowerCase()}`
+    if (!validTypes.includes(fileExt)) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a PDF or DOCX file",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Validate file size (50MB max)
+    const maxSize = 50 * 1024 * 1024
+    if (file.size > maxSize) {
+      toast({
+        title: "File too large",
+        description: "File size must be less than 50MB",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setTenderFile(file)
+    setIsUploading(true)
+
+    try {
+      // Upload document to backend
+      const response = await uploadDocument(file, "tender")
+      setTenderDocumentId(response.id)
+      updateData({
+        tenderDocument: file,
+        tenderDocumentId: response.id,
+      })
+
+      toast({
+        title: "Document uploaded",
+        description: `${file.name} has been uploaded successfully`,
+      })
+    } catch (error: any) {
+      toast({
+        title: "Upload failed",
+        description: error.message || "Failed to upload document",
+        variant: "destructive",
+      })
+      setTenderFile(undefined)
+    } finally {
+      setIsUploading(false)
     }
   }
 
   const removeTenderFile = () => {
     setTenderFile(undefined)
-    updateData({ tenderDocument: undefined })
+    setTenderDocumentId(undefined)
+    updateData({ tenderDocument: undefined, tenderDocumentId: undefined })
   }
 
   return (
@@ -130,16 +187,30 @@ export function BasicInfoStep({ data, updateData }: BasicInfoStepProps) {
                 id="tender-document"
                 accept=".pdf,.docx"
                 onChange={handleTenderFileChange}
+                disabled={isUploading}
                 className="sr-only"
               />
               <label
                 htmlFor="tender-document"
-                className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary hover:bg-gray-50 transition-colors"
+                className={`flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg transition-colors ${
+                  isUploading
+                    ? "cursor-not-allowed opacity-50"
+                    : "cursor-pointer hover:border-primary hover:bg-gray-50"
+                }`}
               >
-                <Upload className="w-5 h-5 text-gray-400" />
-                <span className="text-sm text-gray-600">
-                  Upload tender document (PDF, DOCX)
-                </span>
+                {isUploading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
+                    <span className="text-sm text-gray-600">Uploading...</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-5 h-5 text-gray-400" />
+                    <span className="text-sm text-gray-600">
+                      Upload tender document (PDF, DOCX)
+                    </span>
+                  </>
+                )}
               </label>
             </div>
           ) : (

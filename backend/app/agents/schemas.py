@@ -1,10 +1,11 @@
 """
 Pydantic schemas for agent inputs and outputs in the evaluation workflow.
 """
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, TypedDict, Annotated
 from datetime import datetime
 from enum import Enum
 from pydantic import BaseModel, Field
+from operator import add
 
 
 class EvaluationMethod(str, Enum):
@@ -199,8 +200,52 @@ class EvaluationReport(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
+def _keep_first(left: Any, right: Any) -> Any:
+    """Reducer function that keeps the first value (for immutable fields)."""
+    return left
+
+
+# TypedDict for LangGraph (with reducers for parallel node compatibility)
+class AgentStateTypedDict(TypedDict, total=False):
+    """TypedDict version of AgentState for LangGraph with reducers."""
+    # Immutable fields - use reducer to keep first value when parallel nodes run
+    evaluation_id: Annotated[str, _keep_first]
+    tender_requirements: Annotated[Dict[str, Any], _keep_first]
+    evaluation_method: Annotated[EvaluationMethod, _keep_first]
+
+    # Input bids
+    raw_bids: Annotated[List[Dict[str, Any]], add]
+
+    # Parsed documents
+    parsed_documents: Annotated[List[ParsedBidDocument], add]
+
+    # Compliance results
+    compliance_results: Annotated[List[ComplianceResult], add]
+    compliant_bid_ids: Annotated[List[str], add]
+
+    # Technical scores
+    technical_scores: Annotated[List[TechnicalScore], add]
+
+    # Financial scores
+    financial_scores: Annotated[List[FinancialScore], add]
+
+    # Comparison result (last write wins)
+    comparison_result: Optional[ComparisonResult]
+
+    # Final report (last write wins)
+    final_report: Optional[EvaluationReport]
+
+    # Workflow metadata (last write wins)
+    current_step: str
+    errors: Annotated[List[str], add]
+    progress: float  # 0-100
+    started_at: datetime
+    completed_at: Optional[datetime]
+
+
+# Keep Pydantic model for validation and initialization
 class AgentState(BaseModel):
-    """State object for LangGraph workflow."""
+    """Pydantic model for AgentState (used for validation and initialization)."""
     evaluation_id: str
     tender_requirements: Dict[str, Any]
     evaluation_method: EvaluationMethod
@@ -236,6 +281,38 @@ class AgentState(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+    
+    def to_typed_dict(self) -> AgentStateTypedDict:
+        """Convert to TypedDict for LangGraph."""
+        return AgentStateTypedDict(
+            evaluation_id=self.evaluation_id,
+            tender_requirements=self.tender_requirements,
+            evaluation_method=self.evaluation_method,
+            raw_bids=self.raw_bids,
+            parsed_documents=self.parsed_documents,
+            compliance_results=self.compliance_results,
+            compliant_bid_ids=self.compliant_bid_ids,
+            technical_scores=self.technical_scores,
+            financial_scores=self.financial_scores,
+            comparison_result=self.comparison_result,
+            final_report=self.final_report,
+            current_step=self.current_step,
+            errors=self.errors,
+            progress=self.progress,
+            started_at=self.started_at,
+            completed_at=self.completed_at
+        )
+    
+    @classmethod
+    def from_typed_dict(cls, typed_dict: AgentStateTypedDict) -> "AgentState":
+        """Create from TypedDict."""
+        return cls(**typed_dict)
+
+
+# For backward compatibility, export both
+# LangGraph will use AgentStateTypedDict, initialization uses AgentStateModel
+AgentStateModel = AgentState  # Keep the Pydantic model
+AgentState = AgentStateTypedDict  # Use TypedDict for LangGraph
 
 
 class ProgressUpdate(BaseModel):

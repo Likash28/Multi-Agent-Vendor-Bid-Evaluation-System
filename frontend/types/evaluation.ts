@@ -131,6 +131,8 @@ export interface EvaluationResults {
 }
 
 export interface WebSocketMessage {
-  type: 'agent_update' | 'progress' | 'log' | 'completion' | 'error';
-  data: any;
+  type: 'agent_update' | 'progress' | 'log' | 'completion' | 'error' | 'connected' | 'subscribed' | 'pong';
+  data?: any;
+  evaluation_id?: string;
+  timestamp?: string;
 }

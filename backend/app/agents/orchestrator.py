@@ -9,9 +9,12 @@ import time
 
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
+from typing import Annotated, Dict, Any
+from operator import add
 
 from .schemas import (
     AgentState,
+    AgentStateModel,
     EvaluationResult,
     ProgressUpdate,
     EvaluationMethod,
@@ -28,9 +31,9 @@ from .technical_agent import TechnicalAgent
 from .financial_agent import FinancialAgent
 from .comparison_agent import ComparisonAgent
 from .report_agent import ReportAgent
+from app.utils.logger import get_logger, log_agent_event
 
-
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class EvaluationOrchestrator:
@@ -118,36 +121,31 @@ class EvaluationOrchestrator:
 
         return compiled_workflow
 
-    async def _parse_documents_node(self, state: AgentState) -> AgentState:
+    async def _parse_documents_node(self, state: AgentState) -> Dict[str, Any]:
         """
         Parse all bid documents.
 
         Args:
-            state: Current agent state
+            state: Current agent state (TypedDict)
 
         Returns:
-            Updated agent state
+            Partial state dict with only updated fields
         """
         try:
-            logger.info(f"Starting document parsing for {len(state.raw_bids)} bids")
-            state.current_step = "parse_documents"
-            state.progress = 10.0
+            logger.info(f"Starting document parsing for {len(state['raw_bids'])} bids")
 
             await self._emit_progress(
-                state.evaluation_id,
+                state["evaluation_id"],
                 "parse_documents",
                 10.0,
-                f"Parsing {len(state.raw_bids)} bid documents..."
+                f"Parsing {len(state['raw_bids'])} bid documents..."
             )
 
             # Parse all documents
-            parsed_documents = await self.document_parser.parse_multiple(state.raw_bids)
-
-            state.parsed_documents = parsed_documents
-            state.progress = 20.0
+            parsed_documents = await self.document_parser.parse_multiple(state["raw_bids"])
 
             await self._emit_progress(
-                state.evaluation_id,
+                state["evaluation_id"],
                 "parse_documents",
                 20.0,
                 f"Successfully parsed {len(parsed_documents)} documents",
@@ -156,12 +154,18 @@ class EvaluationOrchestrator:
 
             logger.info(f"Document parsing completed: {len(parsed_documents)} documents")
 
-            return state
+            # Return only updated fields
+            return {
+                "parsed_documents": parsed_documents,
+                "current_step": "parse_documents",
+                "progress": 20.0
+            }
 
         except Exception as e:
             logger.error(f"Document parsing failed: {str(e)}")
-            state.errors.append(f"Document parsing error: {str(e)}")
-            return state
+            return {
+                "errors": state.get("errors", []) + [f"Document parsing error: {str(e)}"]
+            }
 
     async def _compliance_check_node(self, state: AgentState) -> AgentState:
         """
@@ -228,39 +232,37 @@ class EvaluationOrchestrator:
             state.errors.append(f"Compliance check error: {str(e)}")
             return state
 
-    async def _technical_evaluation_node(self, state: AgentState) -> AgentState:
+    async def _technical_evaluation_node(self, state: AgentState) -> Dict[str, Any]:
         """
         Evaluate technical proposals.
 
         Args:
-            state: Current agent state
+            state: Current agent state (TypedDict)
 
         Returns:
-            Updated agent state
+            Partial state dict with only updated fields (excludes immutable fields)
         """
         try:
             # Only evaluate compliant bids for QCBS and Two-Stage
             # For L1, technical is pass/fail so we can skip or do minimal eval
-            if state.evaluation_method == EvaluationMethod.L1:
+            evaluation_method = state["evaluation_method"]
+            if evaluation_method == EvaluationMethod.L1:
                 logger.info("L1 method: Skipping detailed technical evaluation")
-                # Still run basic evaluation but won't be weighted heavily
-                bids_to_evaluate = state.compliant_bid_ids
+                bids_to_evaluate = state["compliant_bid_ids"]
             else:
-                bids_to_evaluate = state.compliant_bid_ids
+                bids_to_evaluate = state["compliant_bid_ids"]
 
             logger.info(f"Starting technical evaluation for {len(bids_to_evaluate)} bids")
-            state.current_step = "technical_evaluation"
-            state.progress = 50.0
 
             await self._emit_progress(
-                state.evaluation_id,
+                state["evaluation_id"],
                 "technical_evaluation",
                 50.0,
                 f"Evaluating technical proposals for {len(bids_to_evaluate)} bids..."
             )
 
             # Prepare bid data
-            parsed_docs_map = {doc.bid_id: doc for doc in state.parsed_documents}
+            parsed_docs_map = {doc.bid_id: doc for doc in state["parsed_documents"]}
             bids_data = [
                 {
                     "bid_id": bid_id,
@@ -274,14 +276,11 @@ class EvaluationOrchestrator:
             # Evaluate technical proposals
             technical_scores = await self.technical_agent.evaluate_multiple(
                 bids_data,
-                state.tender_requirements
+                state["tender_requirements"]
             )
 
-            state.technical_scores = technical_scores
-            state.progress = 60.0
-
             await self._emit_progress(
-                state.evaluation_id,
+                state["evaluation_id"],
                 "technical_evaluation",
                 60.0,
                 f"Technical evaluation completed for {len(technical_scores)} bids",
@@ -290,40 +289,45 @@ class EvaluationOrchestrator:
 
             logger.info(f"Technical evaluation completed: {len(technical_scores)} scores")
 
-            return state
+            # Return only the fields we're updating (exclude immutable fields)
+            return {
+                "technical_scores": technical_scores,
+                "current_step": "technical_evaluation",
+                "progress": 60.0
+            }
 
         except Exception as e:
             logger.error(f"Technical evaluation failed: {str(e)}")
-            state.errors.append(f"Technical evaluation error: {str(e)}")
-            return state
+            # Return error in the update
+            return {
+                "errors": state.get("errors", []) + [f"Technical evaluation error: {str(e)}"]
+            }
 
-    async def _financial_evaluation_node(self, state: AgentState) -> AgentState:
+    async def _financial_evaluation_node(self, state: AgentState) -> Dict[str, Any]:
         """
         Evaluate financial proposals.
 
         Args:
-            state: Current agent state
+            state: Current agent state (TypedDict)
 
         Returns:
-            Updated agent state
+            Partial state dict with only updated fields (excludes immutable fields)
         """
         try:
             # Evaluate all compliant bids
-            bids_to_evaluate = state.compliant_bid_ids
+            bids_to_evaluate = state["compliant_bid_ids"]
 
             logger.info(f"Starting financial evaluation for {len(bids_to_evaluate)} bids")
-            state.current_step = "financial_evaluation"
-            state.progress = 50.0  # Same as technical (parallel)
 
             await self._emit_progress(
-                state.evaluation_id,
+                state["evaluation_id"],
                 "financial_evaluation",
                 50.0,
                 f"Evaluating financial proposals for {len(bids_to_evaluate)} bids..."
             )
 
             # Prepare bid data
-            parsed_docs_map = {doc.bid_id: doc for doc in state.parsed_documents}
+            parsed_docs_map = {doc.bid_id: doc for doc in state["parsed_documents"]}
             bids_data = [
                 {
                     "bid_id": bid_id,
@@ -337,18 +341,15 @@ class EvaluationOrchestrator:
             # Evaluate financial proposals
             financial_scores = await self.financial_agent.evaluate_multiple(
                 bids_data,
-                state.tender_requirements,
-                state.evaluation_method
+                state["tender_requirements"],
+                state["evaluation_method"]
             )
 
             # Recalculate normalized scores
             financial_scores = self.financial_agent.calculate_normalized_scores(financial_scores)
 
-            state.financial_scores = financial_scores
-            state.progress = 60.0
-
             await self._emit_progress(
-                state.evaluation_id,
+                state["evaluation_id"],
                 "financial_evaluation",
                 60.0,
                 f"Financial evaluation completed for {len(financial_scores)} bids",
@@ -357,12 +358,19 @@ class EvaluationOrchestrator:
 
             logger.info(f"Financial evaluation completed: {len(financial_scores)} scores")
 
-            return state
+            # Return only the fields we're updating (exclude immutable fields)
+            return {
+                "financial_scores": financial_scores,
+                "current_step": "financial_evaluation",
+                "progress": 60.0
+            }
 
         except Exception as e:
             logger.error(f"Financial evaluation failed: {str(e)}")
-            state.errors.append(f"Financial evaluation error: {str(e)}")
-            return state
+            # Return error in the update
+            return {
+                "errors": state.get("errors", []) + [f"Financial evaluation error: {str(e)}"]
+            }
 
     async def _comparison_node(self, state: AgentState) -> AgentState:
         """
@@ -554,8 +562,8 @@ class EvaluationOrchestrator:
         try:
             logger.info(f"Starting evaluation {evaluation_id} with {len(bids)} bids")
 
-            # Initialize state
-            initial_state = AgentState(
+            # Initialize state using Pydantic model, then convert to TypedDict for LangGraph
+            state_model = AgentStateModel(
                 evaluation_id=evaluation_id,
                 tender_requirements=tender_requirements,
                 evaluation_method=evaluation_method,
@@ -564,10 +572,19 @@ class EvaluationOrchestrator:
                 progress=0.0,
                 started_at=datetime.utcnow()
             )
+            initial_state = state_model.to_typed_dict()
 
             # Run workflow
             config = {"configurable": {"thread_id": evaluation_id}}
+            logger.info(f"Starting workflow.ainvoke() call for evaluation {evaluation_id}")
+            logger.info(f"Workflow invoke call is happening now with {len(bids)} bids")
+            logger.debug(f"Workflow config: {config}")
+            logger.debug(f"Initial state step: {initial_state.current_step}, progress: {initial_state.progress}")
+            
             final_state = await self.workflow.ainvoke(initial_state, config)
+            
+            logger.info(f"Workflow.ainvoke() call completed successfully for evaluation {evaluation_id}")
+            logger.info(f"Final state step: {final_state.current_step}, progress: {final_state.progress}")
 
             # Calculate execution time
             execution_time = time.time() - start_time
